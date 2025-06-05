@@ -1,9 +1,8 @@
 import axios from "axios";
 import queryString from "query-string";
 
-// Use TMDB API directly
-const baseURL = "https://api.themoviedb.org/3";
-const apiKey = "825648da234f5ffcbd4d21d9b99f4af0";
+// Use Moonflix API which was working before
+const baseURL = "https://moonflix-api.vercel.app/api/v1";
 
 const publicClient = axios.create({
   baseURL,
@@ -15,10 +14,6 @@ const publicClient = axios.create({
 publicClient.interceptors.request.use(async config => {
   return {
     ...config,
-    params: {
-      ...config.params,
-      api_key: apiKey
-    },
     headers: {
       "Content-Type": "application/json"
     }

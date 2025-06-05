@@ -1,9 +1,8 @@
 import axios from "axios";
 import queryString from "query-string";
 
-// Use TMDB API directly
-const baseURL = "https://api.themoviedb.org/3";
-const apiKey = "825648da234f5ffcbd4d21d9b99f4af0";
+// Use Moonflix API which was working before
+const baseURL = "https://moonflix-api.vercel.app/api/v1";
 
 const privateClient = axios.create({
   baseURL,
@@ -13,18 +12,11 @@ const privateClient = axios.create({
 });
 
 privateClient.interceptors.request.use(async config => {
-  // Get the access token from your TMDB account
-  const tmdbToken = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI4MjU2NDhkYTIzNGY1ZmZjYmQ0ZDIxZDliOTlmNGFmMCIsIm5iZiI6MTc0ODc3OTY4MC4xMzkwMDAyLCJzdWIiOiI2ODNjNDJhMGU3OGZmYWRmODI1MzdlMzMiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.i6izu6FxAMqY_dxhuVCSFyVdOhzdOHZSlU21lfBOzyY";
-  
   return {
     ...config,
-    params: {
-      ...config.params,
-      api_key: apiKey
-    },
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${tmdbToken}`
+      "Authorization": `Bearer ${localStorage.getItem("actkn")}`
     }
   };
 });

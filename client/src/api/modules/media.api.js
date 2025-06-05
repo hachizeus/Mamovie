@@ -3,16 +3,9 @@ import publicClient from "../client/public.client";
 
 // TMDB API endpoints
 const mediaEndpoints = {
-  list: ({ mediaType, mediaCategory, page }) => {
-    if (mediaCategory === "popular") {
-      return `/${mediaType}/popular?page=${page}`;
-    } else if (mediaCategory === "top_rated") {
-      return `/${mediaType}/top_rated?page=${page}`;
-    }
-    return `/${mediaType}/${mediaCategory}?page=${page}`;
-  },
-  detail: ({ mediaType, mediaId }) => `/${mediaType}/${mediaId}`,
-  search: ({ mediaType, query, page }) => `/search/${mediaType}?query=${query}&page=${page}`
+  list: ({ mediaType, mediaCategory, page }) => `${mediaType}/${mediaCategory}?page=${page}`,
+  detail: ({ mediaType, mediaId }) => `${mediaType}/detail/${mediaId}`,
+  search: ({ mediaType, query, page }) => `${mediaType}/search?query=${query}&page=${page}`
 };
 
 const mediaApi = {
