@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const EXTERNAL_API = "https://api.themoviedb.org/3";
+const EXTERNAL_API = "https://moonflix-api.vercel.app/api/v1";
 
 const proxyMiddleware = async (req, res, next) => {
   // Skip proxy for authentication routes which are handled locally
@@ -11,10 +11,6 @@ const proxyMiddleware = async (req, res, next) => {
   }
 
   try {
-    // Add TMDB API key to the query parameters
-    const apiKey = "1a7373401d5e0d2c52f1a7393c95d8b7";
-    const params = { ...req.query, api_key: apiKey };
-    
     // Forward the request to the external API
     const response = await axios({
       method: req.method,
@@ -24,7 +20,7 @@ const proxyMiddleware = async (req, res, next) => {
         "Content-Type": "application/json",
         "Authorization": req.headers.authorization
       },
-      params: params
+      params: req.query
     });
 
     // Return the response from the external API
