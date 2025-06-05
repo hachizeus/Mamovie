@@ -1,7 +1,8 @@
 import express from "express";
 import { body } from "express-validator";
-import userController from "../controllers/user.controller.js";
+import authController from "../controllers/auth.controller.js";
 import requestHandler from "../handlers/request.handler.js";
+import userModel from "../models/user.model.js";
 import tokenMiddleware from "../middlewares/token.middleware.js";
 
 const router = express.Router();
@@ -10,7 +11,11 @@ router.post(
   "/signup",
   body("username")
     .exists().withMessage("username is required")
-    .isLength({ min: 8 }).withMessage("username minimum 8 characters"),
+    .isLength({ min: 8 }).withMessage("username minimum 8 characters")
+    .custom(async value => {
+      const user = await userModel.findOne({ username: value });
+      if (user) return Promise.reject("username already used");
+    }),
   body("password")
     .exists().withMessage("password is required")
     .isLength({ min: 8 }).withMessage("password minimum 8 characters"),
@@ -25,10 +30,9 @@ router.post(
     .exists().withMessage("displayName is required")
     .isLength({ min: 8 }).withMessage("displayName minimum 8 characters"),
   body("phoneNumber")
-    .exists().withMessage("phoneNumber is required")
-    .matches(/^(?:\+254|0)[17]\d{8}$/).withMessage("phoneNumber must be a valid Kenyan phone number"),
+    .exists().withMessage("phoneNumber is required"),
   requestHandler.validate,
-  userController.signup
+  authController.signup
 );
 
 router.post(
@@ -40,43 +44,13 @@ router.post(
     .exists().withMessage("password is required")
     .isLength({ min: 8 }).withMessage("password minimum 8 characters"),
   requestHandler.validate,
-  userController.signin
-);
-
-router.post(
-  "/verify-payment",
-  body("userId")
-    .exists().withMessage("userId is required"),
-  body("checkoutRequestId")
-    .exists().withMessage("checkoutRequestId is required"),
-  requestHandler.validate,
-  userController.verifyPaymentAndActivate
-);
-
-router.put(
-  "/update-password",
-  tokenMiddleware.auth,
-  body("password")
-    .exists().withMessage("password is required")
-    .isLength({ min: 8 }).withMessage("password minimum 8 characters"),
-  body("newPassword")
-    .exists().withMessage("newPassword is required")
-    .isLength({ min: 8 }).withMessage("newPassword minimum 8 characters"),
-  body("confirmNewPassword")
-    .exists().withMessage("confirmNewPassword is required")
-    .isLength({ min: 8 }).withMessage("confirmNewPassword minimum 8 characters")
-    .custom((value, { req }) => {
-      if (value !== req.body.newPassword) throw new Error("confirmNewPassword not match");
-      return true;
-    }),
-  requestHandler.validate,
-  userController.updatePassword
+  authController.signin
 );
 
 router.get(
   "/info",
   tokenMiddleware.auth,
-  userController.getInfo
+  authController.getInfo
 );
 
 export default router;

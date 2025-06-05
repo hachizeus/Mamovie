@@ -21,24 +21,28 @@ const mpesaEndpoints = {
 const userApi = {
   signin: async ({ username, password }) => {
     try {
-      console.log("send request");
-      const response = await publicClient.post(
+      console.log("Sending signin request to local server");
+      const response = await localClient.post(
         userEndpoints.signin,
         { username, password }
       );
 
       return { response };
-    } catch (err) { console.log("err"); return { err }; }
+    } catch (err) { console.log("Signin error:", err); return { err }; }
   },
   signup: async ({ username, password, confirmPassword, displayName, phoneNumber }) => {
     try {
-      const response = await publicClient.post(
+      console.log("Sending signup request to local server");
+      const response = await localClient.post(
         userEndpoints.signup,
         { username, password, confirmPassword, displayName, phoneNumber }
       );
-
+      console.log("Signup response:", response);
       return { response };
-    } catch (err) { return { err }; }
+    } catch (err) { 
+      console.error("Signup error:", err);
+      return { err }; 
+    }
   },
   initiatePayment: async ({ phoneNumber, userId }) => {
     try {

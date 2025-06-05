@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: mamovie-api
+    env: node
+    buildCommand: cd server && npm install
+    startCommand: cd server && node index.js
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URL
+        sync: false
+      - key: TOKEN_SECRET
+        sync: false
+      - key: CONSUMER_KEY
+        sync: false
+      - key: CONSUMER_SECRET
+        sync: false
+      - key: MPESA_SHORTCODE
+        sync: false
+      - key: MPESA_PASSKEY
+        sync: false
+      - key: CALLBACK_URL
+        value: https://mamovie-api.onrender.com/callback

@@ -52,17 +52,17 @@ const SignupForm = ({ switchAuthState }) => {
       setErrorMessage(undefined);
       setIsLoginRequest(true);
       
-      try {
-        // For testing, create a temporary user ID
-        const tempUserId = "temp_" + Date.now();
-        setUserId(tempUserId);
+      const { response, err } = await userApi.signup(values);
+      
+      if (response) {
+        setUserId(response.id);
         setActiveStep(1); // Move to payment step
         toast.success("Account created! Please complete payment to activate.");
-        setIsLoginRequest(false);
-      } catch (error) {
-        setIsLoginRequest(false);
-        setErrorMessage("An error occurred during signup");
       }
+      
+      if (err) setErrorMessage(err.message);
+      
+      setIsLoginRequest(false);
     }
   });
 

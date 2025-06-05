@@ -1,38 +1,94 @@
-# MoonFlix
+# Mamovie - MERN Stack Movie Application
 
-    Fullstack Responsive Movie Website 2022
+A full-stack movie streaming application built with the MERN stack (MongoDB, Express, React, Node.js).
 
-# Video tutorial
+## Setup Instructions
 
-[Part 1](https://youtu.be/j-Sn1b4OlLA)<br>
+### Prerequisites
+- Node.js and npm installed
+- MongoDB Atlas account or local MongoDB installation
+- M-Pesa API credentials (if using payment functionality)
 
-[Part 2](https://youtu.be/Q_uLi4f27Lc)<br>
+### Environment Variables
 
-# Resource
+1. Server Environment Variables (server/.env):
+```
+PORT=5000
+MONGODB_URL=mongodb+srv://<username>:<password>@cluster0.example.mongodb.net/mamovie?retryWrites=true&w=majority
+TOKEN_SECRET=your_jwt_secret_key
+MPESA_CONSUMER_KEY=your_mpesa_consumer_key
+MPESA_CONSUMER_SECRET=your_mpesa_consumer_secret
+MPESA_SHORTCODE=your_mpesa_shortcode
+MPESA_PASSKEY=your_mpesa_passkey
+MPESA_CALLBACK_URL=https://your-deployed-app.com/api/v1/mpesa/callback
+```
 
-[Create React App](https://create-react-app.dev/)<br>
-[Material UI](https://create-react-app.dev/)<br>
-[Mongoose](https://mongoosejs.com/)<br>
-[ExpressJS](https://expressjs.com/)<br>
-[Express Validator](https://express-validator.github.io/docs/)<br>
-[React Router](https://reactrouter.com/)<br>
-[Formik](https://formik.org/)<br>
-[Yup](https://github.com/jquense/yup/)<br>
-[Axios](https://axios-http.com/)<br>
-[ThemovieDB](https://www.themoviedb.org/)<br>
-[Swiper](https://swiperjs.com/)<br>
-[JWT](https://github.com/auth0/node-jsonwebtoken)<br>
+2. Client Environment Variables:
+   - For development (client/.env.development):
+   ```
+   REACT_APP_API_BASE_URL=http://localhost:5000/api/v1
+   ```
+   
+   - For production (client/.env.production):
+   ```
+   REACT_APP_API_BASE_URL=https://your-deployed-backend-url.com/api/v1
+   ```
 
-# Preview
+### Installation
 
-!["Fullstack Responsive Movie Website 2022"](https://user-images.githubusercontent.com/67447840/207322539-8fcd83e1-8424-4922-980c-91d20cdf761c.png "Fullstack Responsive Movie Website 2022")
+1. Clone the repository:
+```
+git clone https://github.com/hachizeus/Mamovie.git
+cd Mamovie
+```
 
-!["Fullstack Responsive Movie Website 2022"](https://user-images.githubusercontent.com/67447840/207322676-cbf56b14-8e23-4622-bbd9-76e6cbe619a8.png "Fullstack Responsive Movie Website 2022")
+2. Install server dependencies:
+```
+cd server
+npm install
+```
 
-!["Fullstack Responsive Movie Website 2022"](https://user-images.githubusercontent.com/67447840/207322838-09e075c4-7f47-4252-83e8-afdd633e1968.png "Fullstack Responsive Movie Website 2022")
+3. Install client dependencies:
+```
+cd ../client
+npm install
+```
 
-!["Fullstack Responsive Movie Website 2022"](https://user-images.githubusercontent.com/67447840/207322933-1b5cf238-0ec7-4adf-89eb-6b4fb3dcb996.png "Fullstack Responsive Movie Website 2022")
+4. Start the development server:
+```
+cd ..
+npm run dev
+```
 
-!["Fullstack Responsive Movie Website 2022"](https://user-images.githubusercontent.com/67447840/207323098-dfa74553-78a8-4809-a7a7-cd569c3b3f6c.png "Fullstack Responsive Movie Website 2022")
+### Deployment
 
-!["Fullstack Responsive Movie Website 2022"](https://user-images.githubusercontent.com/67447840/207323021-0b5657d2-8913-4b81-8c1b-d4ceef065ee6.png "Fullstack Responsive Movie Website 2022")
+#### Backend Deployment (Render, Heroku, etc.)
+1. Create an account on your preferred hosting platform
+2. Connect your GitHub repository
+3. Set the environment variables
+4. Deploy the server
+
+#### Frontend Deployment (Netlify)
+1. Build the client:
+```
+cd client
+npm run build
+```
+2. Upload the build folder to Netlify
+3. Set the environment variables in Netlify
+
+## Features
+- User authentication
+- Movie browsing and searching
+- Favorites list
+- M-Pesa payment integration
+- Responsive design
+
+## Technologies Used
+- MongoDB
+- Express.js
+- React.js
+- Node.js
+- Redux Toolkit
+- Material UI
+- JWT Authentication

@@ -1,8 +1,8 @@
 import axios from "axios";
 import queryString from "query-string";
 
-// Use localhost for development
-const baseURL = "http://localhost:5000/api/v1/";
+// Use environment variable for API URL (fallback to localhost for development)
+const baseURL = process.env.REACT_APP_API_URL || "http://localhost:5000/api/v1/";
 
 const localClient = axios.create({
   baseURL,
