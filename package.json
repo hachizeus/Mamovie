@@ -1,0 +1,16 @@
+{
+  "name": "fullstack-mern-movie-2022",
+  "version": "1.0.0",
+  "description": "Full stack MERN movie application",
+  "main": "index.js",
+  "scripts": {
+    "server": "cd server && npm start",
+    "client": "cd client && npm start",
+    "client:build": "cd client && npm run build",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "build": "npm run client:build && mkdir -p server\\dist && xcopy /E /I /Y client\\build server\\dist"
+  },
+  "dependencies": {
+    "concurrently": "^7.6.0"
+  }
+}

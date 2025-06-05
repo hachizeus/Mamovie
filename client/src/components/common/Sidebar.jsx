@@ -39,7 +39,7 @@ const Sidebar = ({ open, toggleSidebar }) => {
             sx={{
               borderRadius: "10px",
               marginY: 1,
-              backgroundColor: appState.includes(item.state) ? "primary.main" : "unset"
+              backgroundColor: appState && appState.includes(item.state) ? "primary.main" : "unset"
             }}
             component={Link}
             to={item.path}
@@ -60,7 +60,7 @@ const Sidebar = ({ open, toggleSidebar }) => {
               sx={{
                 borderRadius: "10px",
                 marginY: 1,
-                backgroundColor: appState.includes(item.state) ? "primary.main" : "unset"
+                backgroundColor: appState && appState.includes(item.state) ? "primary.main" : "unset"
               }}
               component={Link}
               to={item.path}

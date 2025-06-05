@@ -28,16 +28,19 @@ const AuthModal = () => {
 
   return (
     <Modal open={authModalOpen} onClose={handleClose}>
-      <Box sx={{
-        position: "absolute",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        width: "100%",
-        maxWidth: "600px",
-        padding: 4,
-        outline: "none"
-      }}>
+      <Box 
+        data-auth-modal="true"
+        sx={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: "100%",
+          maxWidth: "600px",
+          padding: 4,
+          outline: "none"
+        }}
+      >
         <Box sx={{ padding: 4, boxShadow: 24, backgroundColor: "background.paper" }}>
           <Box sx={{ textAlign: "center", marginBottom: "2rem" }}>
             <Logo />

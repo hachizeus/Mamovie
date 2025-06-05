@@ -1,13 +1,13 @@
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { Box, Button, Chip, Divider, Stack, Typography, useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { Autoplay } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { toast } from "react-toastify";
 
 import { setGlobalLoading } from "../../redux/features/globalLoadingSlice";
+import { setAuthModalOpen } from "../../redux/features/authModalSlice";
 import { routesGen } from "../../routes/routes";
 
 import uiConfigs from "../../configs/ui.configs";
@@ -21,6 +21,7 @@ import mediaApi from "../../api/modules/media.api";
 const HeroSlide = ({ mediaType, mediaCategory }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.user);
 
   const [movies, setMovies] = useState([]);
   const [genres, setGenres] = useState([]);
@@ -55,6 +56,13 @@ const HeroSlide = ({ mediaType, mediaCategory }) => {
     getGenres();
   }, [mediaType, mediaCategory, dispatch]);
 
+  const handleWatchNowClick = (e) => {
+    if (!user) {
+      e.preventDefault();
+      dispatch(setAuthModalOpen(true));
+    }
+  };
+
   return (
     <Box sx={{
       position: "relative",
@@ -74,12 +82,12 @@ const HeroSlide = ({ mediaType, mediaCategory }) => {
       <Swiper
         grabCursor={true}
         loop={true}
-        // modules={[Autoplay]}
+        modules={[Autoplay]}
         style={{ width: "100%", height: "max-content" }}
-      // autoplay={{
-      //   delay: 3000,
-      //   disableOnInteraction: false
-      // }}
+        autoplay={{
+          delay: 3000,
+          disableOnInteraction: false
+        }}
       >
         {movies.map((movie, index) => (
           <SwiperSlide key={index}>
@@ -163,8 +171,9 @@ const HeroSlide = ({ mediaType, mediaCategory }) => {
                     variant="contained"
                     size="large"
                     startIcon={<PlayArrowIcon />}
-                    component={Link}
-                    to={routesGen.mediaDetail(mediaType, movie.id)}
+                    component={user ? "a" : "button"}
+                    href={user ? routesGen.mediaDetail(mediaType, movie.id) : undefined}
+                    onClick={handleWatchNowClick}
                     sx={{ width: "max-content" }}
                   >
                     watch now

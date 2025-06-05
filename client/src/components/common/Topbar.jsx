@@ -29,6 +29,7 @@ const ScrollAppBar = ({ children, window }) => {
     }
   });
 };
+
 const Topbar = () => {
   const { user } = useSelector((state) => state.user);
   const { appState } = useSelector((state) => state.appState);
@@ -49,7 +50,7 @@ const Topbar = () => {
     <>
       <Sidebar open={sidebarOpen} toggleSidebar={toggleSidebar} />
       <ScrollAppBar>
-        <AppBar elevation={0} sx={{ zIndex: 9999 }}>
+        <AppBar data-topbar="true" elevation={0} sx={{ zIndex: 9999 }}>
           <Toolbar sx={{ alignItems: "center", justifyContent: "space-between" }}>
             <Stack direction="row" spacing={1} alignItems="center">
               <IconButton
@@ -74,12 +75,12 @@ const Topbar = () => {
                 <Button
                   key={index}
                   sx={{
-                    color: appState.includes(item.state) ? "primary.contrastText" : "inherit",
+                    color: appState && appState.includes(item.state) ? "primary.contrastText" : "inherit",
                     mr: 2
                   }}
                   component={Link}
                   to={item.path}
-                  variant={appState.includes(item.state) ? "contained" : "text"}
+                  variant={appState && appState.includes(item.state) ? "contained" : "text"}
                 >
                   {item.display}
                 </Button>
@@ -103,6 +104,9 @@ const Topbar = () => {
                 sign in
               </Button>}
             </Stack>
+            {/* user menu */}
+
+            {/* user menu */}
             {user && <UserMenu />}
             {/* user menu */}
           </Toolbar>

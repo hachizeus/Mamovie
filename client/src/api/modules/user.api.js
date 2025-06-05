@@ -1,11 +1,21 @@
 import privateClient from "../client/private.client";
 import publicClient from "../client/public.client";
+import localClient from "../client/local.client";
+
+// Use localClient for M-Pesa operations
+const client = localClient; // Make sure this is pointing to your local server
 
 const userEndpoints = {
   signin: "user/signin",
   signup: "user/signup",
   getInfo: "user/info",
-  passwordUpdate: "user/update-password"
+  passwordUpdate: "user/update-password",
+  verifyPayment: "user/verify-payment"
+};
+
+const mpesaEndpoints = {
+  initiatePayment: "mpesa/initiate",
+  checkStatus: "mpesa/status"
 };
 
 const userApi = {
@@ -20,11 +30,47 @@ const userApi = {
       return { response };
     } catch (err) { console.log("err"); return { err }; }
   },
-  signup: async ({ username, password, confirmPassword, displayName }) => {
+  signup: async ({ username, password, confirmPassword, displayName, phoneNumber }) => {
     try {
       const response = await publicClient.post(
         userEndpoints.signup,
-        { username, password, confirmPassword, displayName }
+        { username, password, confirmPassword, displayName, phoneNumber }
+      );
+
+      return { response };
+    } catch (err) { return { err }; }
+  },
+  initiatePayment: async ({ phoneNumber, userId }) => {
+    try {
+      console.log("Sending payment request to:", mpesaEndpoints.initiatePayment);
+      console.log("With data:", { phoneNumber, userId });
+      
+      const response = await client.post(
+        mpesaEndpoints.initiatePayment,
+        { phoneNumber, userId }
+      );
+      
+      console.log("Payment initiation successful:", response);
+      return { response };
+    } catch (err) { 
+      console.error("Payment initiation failed:", err);
+      return { err }; 
+    }
+  },
+  checkPaymentStatus: async (checkoutRequestId) => {
+    try {
+      const response = await client.get(
+        `${mpesaEndpoints.checkStatus}/${checkoutRequestId}`
+      );
+
+      return { response };
+    } catch (err) { return { err }; }
+  },
+  verifyPaymentAndActivate: async ({ userId, checkoutRequestId }) => {
+    try {
+      const response = await client.post(
+        userEndpoints.verifyPayment,
+        { userId, checkoutRequestId }
       );
 
       return { response };

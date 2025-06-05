@@ -21,6 +21,29 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     select: false
+  },
+  phoneNumber: {
+    type: String,
+    required: true
+  },
+  subscription: {
+    status: {
+      type: String,
+      enum: ['pending', 'active', 'expired'],
+      default: 'pending'
+    },
+    expiresAt: {
+      type: Date,
+      default: null
+    },
+    transactionId: {
+      type: String,
+      default: null
+    },
+    checkoutRequestId: {
+      type: String,
+      default: null
+    }
   }
 }, modelOptions);
 
