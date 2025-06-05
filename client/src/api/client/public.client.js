@@ -13,14 +13,11 @@ const publicClient = axios.create({
 });
 
 publicClient.interceptors.request.use(async config => {
-  // Add API key as a proper query parameter
-  const apiKeyParam = { api_key: apiKey };
-  
   return {
     ...config,
     params: {
       ...config.params,
-      ...apiKeyParam
+      api_key: apiKey
     },
     headers: {
       "Content-Type": "application/json"

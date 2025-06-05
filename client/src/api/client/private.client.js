@@ -13,9 +13,6 @@ const privateClient = axios.create({
 });
 
 privateClient.interceptors.request.use(async config => {
-  // Add API key as a proper query parameter
-  const apiKeyParam = { api_key: apiKey };
-  
   // Get the access token from your TMDB account
   const tmdbToken = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI4MjU2NDhkYTIzNGY1ZmZjYmQ0ZDIxZDliOTlmNGFmMCIsIm5iZiI6MTc0ODc3OTY4MC4xMzkwMDAyLCJzdWIiOiI2ODNjNDJhMGU3OGZmYWRmODI1MzdlMzMiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.i6izu6FxAMqY_dxhuVCSFyVdOhzdOHZSlU21lfBOzyY";
   
@@ -23,7 +20,7 @@ privateClient.interceptors.request.use(async config => {
     ...config,
     params: {
       ...config.params,
-      ...apiKeyParam
+      api_key: apiKey
     },
     headers: {
       "Content-Type": "application/json",
