@@ -1,7 +1,8 @@
 import axios from "axios";
 import queryString from "query-string";
 
-const baseURL = process.env.REACT_APP_API_URL || "https://mamovie-api.onrender.com/api/v1";
+const baseURL = process.env.REACT_APP_API_URL || "https://api.themoviedb.org/3";
+const apiKey = process.env.REACT_APP_TMDB_KEY || "1a7373401d5e0d2c52f1a7393c95d8b7";
 
 const publicClient = axios.create({
   baseURL,
@@ -11,6 +12,12 @@ const publicClient = axios.create({
 });
 
 publicClient.interceptors.request.use(async config => {
+  // Add API key to all requests
+  config.params = {
+    ...config.params,
+    api_key: apiKey
+  };
+  
   return {
     ...config,
     headers: {
