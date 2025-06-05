@@ -1,19 +1,49 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+// Get stored user data from localStorage
+const getStoredUser = () => {
+  try {
+    const token = localStorage.getItem("actkn");
+    const userData = localStorage.getItem("user_data");
+    return userData && token ? JSON.parse(userData) : null;
+  } catch (error) {
+    console.error("Error parsing stored user data:", error);
+    return null;
+  }
+};
+
+// Store user data in localStorage
+const storeUser = (userData) => {
+  if (!userData) {
+    localStorage.removeItem("actkn");
+    localStorage.removeItem("user_data");
+    return;
+  }
+  
+  if (userData.token) {
+    localStorage.setItem("actkn", userData.token);
+  }
+  
+  // Store user data without sensitive information
+  const userToStore = {
+    id: userData.id,
+    username: userData.username,
+    displayName: userData.displayName,
+    subscription: userData.subscription
+  };
+  
+  localStorage.setItem("user_data", JSON.stringify(userToStore));
+};
+
 export const userSlice = createSlice({
   name: "User",
   initialState: {
-    user: null,
+    user: getStoredUser(),
     listFavorites: []
   },
   reducers: {
     setUser: (state, action) => {
-      if (action.payload === null) {
-        localStorage.removeItem("actkn");
-      } else {
-        if (action.payload.token) localStorage.setItem("actkn", action.payload.token);
-      }
-
+      storeUser(action.payload);
       state.user = action.payload;
     },
     setListFavorites: (state, action) => {

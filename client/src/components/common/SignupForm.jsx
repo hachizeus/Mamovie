@@ -38,7 +38,7 @@ const SignupForm = ({ switchAuthState }) => {
         .min(8, "password minimum 8 characters")
         .required("password is required"),
       displayName: Yup.string()
-        .min(8, "displayName minimum 8 characters")
+        .min(3, "displayName minimum 3 characters")
         .required("displayName is required"),
       confirmPassword: Yup.string()
         .oneOf([Yup.ref("password")], "confirmPassword not match")
@@ -167,7 +167,7 @@ const SignupForm = ({ switchAuthState }) => {
     switch (step) {
       case 0:
         return (
-          <Stack spacing={3}>
+          <Stack spacing={2}>
             <TextField
               type="text"
               placeholder="username"
@@ -178,6 +178,7 @@ const SignupForm = ({ switchAuthState }) => {
               color="success"
               error={signupForm.touched.username && signupForm.errors.username !== undefined}
               helperText={signupForm.touched.username && signupForm.errors.username}
+              size="small"
             />
             <TextField
               type="text"
@@ -189,6 +190,7 @@ const SignupForm = ({ switchAuthState }) => {
               color="success"
               error={signupForm.touched.displayName && signupForm.errors.displayName !== undefined}
               helperText={signupForm.touched.displayName && signupForm.errors.displayName}
+              size="small"
             />
             <TextField
               type="text"
@@ -200,6 +202,7 @@ const SignupForm = ({ switchAuthState }) => {
               color="success"
               error={signupForm.touched.phoneNumber && signupForm.errors.phoneNumber !== undefined}
               helperText={signupForm.touched.phoneNumber && signupForm.errors.phoneNumber}
+              size="small"
             />
             <TextField
               type="password"
@@ -211,6 +214,7 @@ const SignupForm = ({ switchAuthState }) => {
               color="success"
               error={signupForm.touched.password && signupForm.errors.password !== undefined}
               helperText={signupForm.touched.password && signupForm.errors.password}
+              size="small"
             />
             <TextField
               type="password"
@@ -222,12 +226,13 @@ const SignupForm = ({ switchAuthState }) => {
               color="success"
               error={signupForm.touched.confirmPassword && signupForm.errors.confirmPassword !== undefined}
               helperText={signupForm.touched.confirmPassword && signupForm.errors.confirmPassword}
+              size="small"
             />
           </Stack>
         );
       case 1:
         return (
-          <Box sx={{ textAlign: 'center', py: 3 }}>
+          <Box sx={{ textAlign: 'center', py: 2 }}>
             <Typography variant="h6" gutterBottom>
               Subscription Payment - 1 KSH
             </Typography>
@@ -240,31 +245,30 @@ const SignupForm = ({ switchAuthState }) => {
                 fullWidth
                 size="large"
                 variant="contained"
-                sx={{ marginTop: 4 }}
+                sx={{ marginTop: 2 }}
                 loading={isLoginRequest}
                 onClick={handleInitiatePayment}
               >
                 Pay with M-Pesa
               </LoadingButton>
             ) : (
-              <Box sx={{ mt: 3 }}>
+              <Box sx={{ mt: 2 }}>
                 <Alert severity="info">
                   {paymentStatus || "Payment initiated. Please check your phone."}
                 </Alert>
                 
-                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
                   {isCheckingPayment && <CircularProgress size={24} />}
                 </Box>
                 
-                <Typography variant="body2" sx={{ mt: 2 }}>
+                <Typography variant="body2" sx={{ mt: 1 }}>
                   Checking payment status automatically...
                 </Typography>
                 
                 {/* Simulation note */}
-                <Alert severity="warning" sx={{ mt: 3 }}>
+                <Alert severity="warning" sx={{ mt: 2 }}>
                   SIMULATION MODE: For testing purposes, the payment will be automatically 
-                  confirmed after 15 seconds. In production, you would receive an actual 
-                  M-Pesa prompt on your phone.
+                  confirmed after 15 seconds.
                 </Alert>
               </Box>
             )}
@@ -272,8 +276,8 @@ const SignupForm = ({ switchAuthState }) => {
         );
       case 2:
         return (
-          <Box sx={{ textAlign: 'center', py: 3 }}>
-            <Alert severity="success" sx={{ mb: 3 }}>
+          <Box sx={{ textAlign: 'center', py: 2 }}>
+            <Alert severity="success" sx={{ mb: 2 }}>
               Payment successful! Your account is now active.
             </Alert>
             <Typography variant="body1">
@@ -287,8 +291,16 @@ const SignupForm = ({ switchAuthState }) => {
   };
 
   return (
-    <Box>
-      <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
+    <Box sx={{ maxWidth: '100%', overflow: 'hidden' }}>
+      <Stepper 
+        activeStep={activeStep} 
+        sx={{ 
+          mb: 2,
+          '& .MuiStepLabel-label': {
+            fontSize: { xs: '0.7rem', sm: '0.8rem', md: '0.9rem' }
+          }
+        }}
+      >
         {steps.map((label) => (
           <Step key={label}>
             <StepLabel>{label}</StepLabel>
@@ -306,7 +318,7 @@ const SignupForm = ({ switchAuthState }) => {
               fullWidth
               size="large"
               variant="contained"
-              sx={{ marginTop: 4 }}
+              sx={{ marginTop: 2 }}
               loading={isLoginRequest}
             >
               Continue to Payment
