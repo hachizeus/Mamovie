@@ -5,7 +5,16 @@ const getStoredUser = () => {
   try {
     const token = localStorage.getItem("actkn");
     const userData = localStorage.getItem("user_data");
-    return userData && token ? JSON.parse(userData) : null;
+    
+    // If we have user data but no token, restore the token from user data
+    if (userData && !token) {
+      const parsedUser = JSON.parse(userData);
+      if (parsedUser && parsedUser.token) {
+        localStorage.setItem("actkn", parsedUser.token);
+      }
+    }
+    
+    return userData ? JSON.parse(userData) : null;
   } catch (error) {
     console.error("Error parsing stored user data:", error);
     return null;
@@ -24,12 +33,13 @@ const storeUser = (userData) => {
     localStorage.setItem("actkn", userData.token);
   }
   
-  // Store user data without sensitive information
+  // Store user data including token for persistence
   const userToStore = {
     id: userData.id,
     username: userData.username,
     displayName: userData.displayName,
-    subscription: userData.subscription
+    subscription: userData.subscription,
+    token: userData.token // Include token in user data for persistence
   };
   
   localStorage.setItem("user_data", JSON.stringify(userToStore));
