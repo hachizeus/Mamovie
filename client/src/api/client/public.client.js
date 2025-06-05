@@ -3,7 +3,7 @@ import queryString from "query-string";
 
 // Use TMDB API directly
 const baseURL = "https://api.themoviedb.org/3";
-const apiKey = "1a7373401d5e0d2c52f1a7393c95d8b7";
+const apiKey = "825648da234f5ffcbd4d21d9b99f4af0";
 
 const publicClient = axios.create({
   baseURL,
