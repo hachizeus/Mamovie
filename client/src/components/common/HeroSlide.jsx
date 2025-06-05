@@ -34,8 +34,13 @@ const HeroSlide = ({ mediaType, mediaCategory }) => {
         page: 1
       });
 
-      if (response) setMovies(response.results);
-      if (err) toast.error(err.message);
+      if (response && response.results) {
+        setMovies(response.results);
+      } else if (err) {
+        toast.error(err.message || "An error occurred");
+      } else {
+        toast.error("Could not load media data");
+      }
       dispatch(setGlobalLoading(false));
     };
 
@@ -43,13 +48,15 @@ const HeroSlide = ({ mediaType, mediaCategory }) => {
       dispatch(setGlobalLoading(true));
       const { response, err } = await genreApi.getList({ mediaType });
 
-      if (response) {
+      if (response && response.genres) {
         setGenres(response.genres);
         getMedias();
-      }
-      if (err) {
-        toast.error(err.message);
-        setGlobalLoading(false);
+      } else if (err) {
+        toast.error(err.message || "An error occurred");
+        dispatch(setGlobalLoading(false));
+      } else {
+        toast.error("Could not load genre data");
+        dispatch(setGlobalLoading(false));
       }
     };
 

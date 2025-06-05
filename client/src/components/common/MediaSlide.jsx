@@ -16,8 +16,13 @@ const MediaSlide = ({ mediaType, mediaCategory }) => {
         page: 1
       });
 
-      if (response) setMedias(response.results);
-      if (err) toast.error(err.message);
+      if (response && response.results) {
+        setMedias(response.results);
+      } else if (err) {
+        toast.error(err.message || "An error occurred");
+      } else {
+        toast.error("Could not load media data");
+      }
     };
 
     getMedias();
