@@ -35,13 +35,13 @@ const userApi = {
       console.log("Sending signup request to server:", userEndpoints.signup);
       console.log("With data:", { username, displayName, phoneNumber });
       
-      // Use direct URL for production with mode: 'cors' and credentials: 'include'
+      // Use direct URL for production without credentials
       const directUrl = "https://mamovie-api.onrender.com/api/v1/user/signup";
       
       const response = await fetch(directUrl, {
         method: 'POST',
         mode: 'cors',
-        credentials: 'include',
+        credentials: 'omit', // Don't send credentials
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'

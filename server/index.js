@@ -15,10 +15,10 @@ const __dirname = path.dirname(__filename);
 
 // Enable CORS for all routes
 app.use(cors({
-  origin: '*',  // Allow all origins temporarily for debugging
+  origin: ['https://mamovie-frontend.onrender.com', 'http://localhost:3000'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
+  credentials: false
 }));
 
 app.use(express.json());
