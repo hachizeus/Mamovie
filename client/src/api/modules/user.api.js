@@ -32,16 +32,33 @@ const userApi = {
   },
   signup: async ({ username, password, confirmPassword, displayName, phoneNumber }) => {
     try {
-      console.log("Sending signup request to local server");
-      const response = await localClient.post(
-        userEndpoints.signup,
-        { username, password, confirmPassword, displayName, phoneNumber }
-      );
+      console.log("Sending signup request to server:", userEndpoints.signup);
+      console.log("With data:", { username, displayName, phoneNumber });
+      
+      // Use direct URL for production with mode: 'cors' and credentials: 'include'
+      const directUrl = "https://mamovie-api.onrender.com/api/v1/user/signup";
+      
+      const response = await fetch(directUrl, {
+        method: 'POST',
+        mode: 'cors',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ username, password, confirmPassword, displayName, phoneNumber })
+      }).then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! Status: ${res.status}`);
+        }
+        return res.json();
+      });
+      
       console.log("Signup response:", response);
       return { response };
     } catch (err) { 
       console.error("Signup error:", err);
-      return { err }; 
+      return { err: { message: err.message || "Network error during signup" } }; 
     }
   },
   initiatePayment: async ({ phoneNumber, userId }) => {
