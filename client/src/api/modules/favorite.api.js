@@ -15,7 +15,7 @@ const favoriteApi = {
     try {
       // Get favorites from localStorage
       const favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
-      return { response: { favorites } };
+      return { response: favorites }; // Return favorites directly as the response
     } catch (err) { 
       console.error("Error getting favorites:", err);
       return { err }; 
@@ -31,6 +31,16 @@ const favoriteApi = {
     try {
       // Get current favorites
       const favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+      
+      // Check if already in favorites
+      const existingIndex = favorites.findIndex(fav => 
+        fav.mediaId && mediaId && fav.mediaId.toString() === mediaId.toString()
+      );
+      
+      // If already in favorites, return early
+      if (existingIndex >= 0) {
+        return { response: { favorite: favorites[existingIndex] } };
+      }
       
       // Create new favorite item
       const newFavorite = {
