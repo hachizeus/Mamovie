@@ -99,9 +99,13 @@ const userApi = {
   },
   getInfo: async () => {
     try {
-      const response = await privateClient.get(userEndpoints.getInfo);
-
-      return { response };
+      // Get user data from localStorage instead of API call
+      const userData = localStorage.getItem("user_data");
+      if (userData) {
+        return { response: JSON.parse(userData) };
+      } else {
+        return { err: { message: "User not logged in" } };
+      }
     } catch (err) { return { err }; }
   },
   passwordUpdate: async ({ password, newPassword, confirmNewPassword }) => {
