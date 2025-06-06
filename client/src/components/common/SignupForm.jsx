@@ -183,7 +183,7 @@ const SignupForm = ({ switchAuthState }) => {
             />
             <TextField
               type="text"
-              placeholder="display name"
+              placeholder="display name (max 8 chars)"
               name="displayName"
               fullWidth
               value={signupForm.values.displayName}
@@ -192,6 +192,7 @@ const SignupForm = ({ switchAuthState }) => {
               error={signupForm.touched.displayName && signupForm.errors.displayName !== undefined}
               helperText={signupForm.touched.displayName && signupForm.errors.displayName}
               size="small"
+              inputProps={{ maxLength: 8 }}
             />
             <TextField
               type="text"
