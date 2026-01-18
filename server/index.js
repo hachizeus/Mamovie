@@ -1,0 +1,88 @@
+import express from "express";
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import http from "http";
+import "dotenv/config";
+import routes from "./src/routes/index.js";
+import path from "path";
+import { fileURLToPath } from "url";
+import connectDB from "./src/mongoose/index.js";
+import fetch from "node-fetch";
+
+const app = express();
+
+// -------------------- PATH SETUP --------------------
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// -------------------- CORS (SAFE + CORRECT) --------------------
+app.use(
+  cors({
+    origin: [
+      "https://mamovie-frontend.onrender.com",
+      "http://localhost:3000",
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: false,
+  })
+);
+
+// Handle preflight requests
+app.options("*", cors());
+
+// -------------------- MIDDLEWARE --------------------
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+
+// -------------------- DATABASE --------------------
+connectDB();
+
+// -------------------- API PROXY (MOVIES / TV) --------------------
+app.use("/api/v1", async (req, res, next) => {
+  try {
+    // Allow auth routes to pass through
+    if (req.path.startsWith("/auth")) {
+      return next();
+    }
+
+    const tmdbBaseUrl = "https://api.themoviedb.org/3";
+    const targetUrl =
+      tmdbBaseUrl + req.originalUrl.replace("/api/v1", "");
+
+    const response = await fetch(targetUrl, {
+      headers: {
+        Authorization: `Bearer ${process.env.TMDB_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data = await response.json();
+
+    res.status(response.status).json(data);
+  } catch (error) {
+    console.error("Proxy error:", error);
+    res.status(500).json({ error: "Failed to fetch data" });
+  }
+});
+
+// -------------------- AUTH / INTERNAL ROUTES --------------------
+app.use("/api/v1", routes);
+
+// -------------------- STATIC FRONTEND --------------------
+app.use(express.static(path.join(__dirname, "dist")));
+
+// SPA fallback
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
+});
+
+// -------------------- SERVER --------------------
+const port = process.env.PORT || 5000;
+const server = http.createServer(app);
+
+server.listen(port, () => {
+  console.log(`🚀 Server running on port ${port}`);
+  console.log(`🌍 Environment: ${process.env.NODE_ENV || "development"}`);
+});
