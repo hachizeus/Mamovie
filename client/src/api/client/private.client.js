@@ -1,8 +1,7 @@
 import axios from "axios";
 import queryString from "query-string";
 
-// Use Moonflix API which was working before
-const baseURL = "https://moonflix-api.vercel.app/api/v1";
+const baseURL = process.env.REACT_APP_API_BASE_URL;
 
 const privateClient = axios.create({
   baseURL,
@@ -12,6 +11,11 @@ const privateClient = axios.create({
 });
 
 privateClient.interceptors.request.use(async config => {
+  // For external API calls, use proxy
+  if (config.url.includes('moonflix')) {
+    config.url = `/proxy?url=${encodeURIComponent(`https://moonflix-api.vercel.app/api/v1${config.url}`)}`;
+  }
+  
   return {
     ...config,
     headers: {
