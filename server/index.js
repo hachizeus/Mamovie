@@ -43,17 +43,23 @@ connectDB();
 app.use("/api/v1", routes);
 
 // -------------------- EXTERNAL API PROXY --------------------
-app.use("/api/v1/proxy", async (req, res) => {
+app.get("/api/v1/proxy", async (req, res) => {
   try {
     const { url } = req.query;
     if (!url) return res.status(400).json({ error: "URL required" });
     
+    console.log('Proxying to:', url);
     const response = await fetch(url);
-    const data = await response.json();
     
+    if (!response.ok) {
+      return res.status(response.status).json({ error: `External API error: ${response.status}` });
+    }
+    
+    const data = await response.json();
     res.json(data);
   } catch (error) {
-    res.status(500).json({ error: "Proxy failed" });
+    console.error('Proxy error:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
