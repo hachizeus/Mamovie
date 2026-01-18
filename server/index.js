@@ -39,14 +39,12 @@ app.use(cookieParser());
 // -------------------- DATABASE --------------------
 connectDB();
 
+// -------------------- AUTH / INTERNAL ROUTES --------------------
+app.use("/api/v1", routes);
+
 // -------------------- API PROXY (MOVIES / TV) --------------------
 app.use("/api/v1", async (req, res, next) => {
   try {
-    // Allow auth routes to pass through
-    if (req.path.startsWith("/auth")) {
-      return next();
-    }
-
     const tmdbBaseUrl = "https://api.themoviedb.org/3";
     const targetUrl =
       tmdbBaseUrl + req.originalUrl.replace("/api/v1", "");
@@ -66,9 +64,6 @@ app.use("/api/v1", async (req, res, next) => {
     res.status(500).json({ error: "Failed to fetch data" });
   }
 });
-
-// -------------------- AUTH / INTERNAL ROUTES --------------------
-app.use("/api/v1", routes);
 
 // -------------------- STATIC FRONTEND --------------------
 app.use(express.static(path.join(__dirname, "dist")));
