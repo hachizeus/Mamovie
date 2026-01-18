@@ -65,12 +65,9 @@ app.use("/api/v1", async (req, res, next) => {
   }
 });
 
-// -------------------- STATIC FRONTEND --------------------
-app.use(express.static(path.join(__dirname, "dist")));
-
-// SPA fallback
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "dist", "index.html"));
+// -------------------- HEALTH CHECK --------------------
+app.get("/", (req, res) => {
+  res.json({ message: "Mamovie API is running!" });
 });
 
 // -------------------- SERVER --------------------
