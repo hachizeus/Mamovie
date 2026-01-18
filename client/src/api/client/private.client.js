@@ -11,9 +11,10 @@ const privateClient = axios.create({
 });
 
 privateClient.interceptors.request.use(async config => {
-  // For external API calls, use proxy
+  // For moonflix API calls, use proxy
   if (config.url.includes('moonflix')) {
-    config.url = `/proxy?url=${encodeURIComponent(`https://moonflix-api.vercel.app/api/v1${config.url}`)}`;
+    const moonflixPath = config.url.replace('moonflix', '');
+    config.url = `/proxy?url=${encodeURIComponent(`https://moonflix-api.vercel.app/api/v1${moonflixPath}`)}`;
   }
   
   return {
