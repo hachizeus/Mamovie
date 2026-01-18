@@ -42,12 +42,26 @@ connectDB();
 // -------------------- AUTH / INTERNAL ROUTES --------------------
 app.use("/api/v1", routes);
 
-// -------------------- API PROXY (MOVIES / TV) --------------------
+// -------------------- EXTERNAL API PROXY --------------------
+app.use("/api/v1/proxy", async (req, res) => {
+  try {
+    const { url } = req.query;
+    if (!url) return res.status(400).json({ error: "URL required" });
+    
+    const response = await fetch(url);
+    const data = await response.json();
+    
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: "Proxy failed" });
+  }
+});
+
+// -------------------- TMDB API PROXY --------------------
 app.use("/api/v1", async (req, res, next) => {
   try {
     const tmdbBaseUrl = "https://api.themoviedb.org/3";
-    const targetUrl =
-      tmdbBaseUrl + req.originalUrl.replace("/api/v1", "");
+    const targetUrl = tmdbBaseUrl + req.originalUrl.replace("/api/v1", "");
 
     const response = await fetch(targetUrl, {
       headers: {
@@ -57,10 +71,8 @@ app.use("/api/v1", async (req, res, next) => {
     });
 
     const data = await response.json();
-
     res.status(response.status).json(data);
   } catch (error) {
-    console.error("Proxy error:", error);
     res.status(500).json({ error: "Failed to fetch data" });
   }
 });
