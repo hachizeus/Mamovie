@@ -4,16 +4,34 @@ import userModel from "../models/user.model.js";
 import favoriteModel from "../models/favorite.model.js";
 import reviewModel from "../models/review.model.js";
 import tokenMiddlerware from "../middlewares/token.middleware.js";
+import cacheService from "../services/cache.service.js";
 
 const getList = async (req, res) => {
   try {
-    const { page } = req.query;
+    const { page = 1 } = req.query;
     const { mediaType, mediaCategory } = req.params;
 
-    const response = await tmdbApi.mediaList({ mediaType, mediaCategory, page });
+    // Validate page number
+    const pageNum = Math.max(1, Math.min(parseInt(page) || 1, 1000));
+
+    // Check cache first
+    const cacheKey = `${mediaType}:${mediaCategory}`;
+    let response = cacheService.get(cacheKey, { page: pageNum });
+    
+    if (!response) {
+      response = await tmdbApi.mediaList({ mediaType, mediaCategory, page: pageNum });
+      
+      if (!response || !response.results) {
+        return responseHandler.badRequest(res, "Failed to fetch media list from external API");
+      }
+      
+      // Cache for 30 minutes (media list changes frequently)
+      cacheService.set(cacheKey, response, { page: pageNum }, 30 * 60 * 1000);
+    }
 
     return responseHandler.ok(res, response);
-  } catch {
+  } catch (error) {
+    console.error(`[getList Error] ${error.message}`);
     responseHandler.error(res);
   }
 };
@@ -22,10 +40,23 @@ const getGenres = async (req, res) => {
   try {
     const { mediaType } = req.params;
 
-    const response = await tmdbApi.mediaGenres({ mediaType });
+    // Check cache first - genres change rarely, cache for 24 hours
+    const cacheKey = `genres:${mediaType}`;
+    let response = cacheService.get(cacheKey);
+    
+    if (!response) {
+      response = await tmdbApi.mediaGenres({ mediaType });
+      
+      if (!response || !response.genres) {
+        return responseHandler.badRequest(res, "Failed to fetch genres from external API");
+      }
+      
+      cacheService.set(cacheKey, response, {}, 24 * 60 * 60 * 1000);
+    }
 
     return responseHandler.ok(res, response);
-  } catch {
+  } catch (error) {
+    console.error(`[getGenres Error] ${error.message}`);
     responseHandler.error(res);
   }
 };
@@ -33,16 +64,37 @@ const getGenres = async (req, res) => {
 const search = async (req, res) => {
   try {
     const { mediaType } = req.params;
-    const { query, page } = req.query;
+    const { query, page = 1 } = req.query;
 
-    const response = await tmdbApi.mediaSearch({
-      query,
-      page,
-      mediaType: mediaType === "people" ? "person" : mediaType
-    });
+    if (!query || query.trim().length === 0) {
+      return responseHandler.badRequest(res, "Search query is required");
+    }
+
+    // Validate page number
+    const pageNum = Math.max(1, Math.min(parseInt(page) || 1, 1000));
+
+    // Check cache first
+    const cacheKey = `search:${mediaType}`;
+    let response = cacheService.get(cacheKey, { query, page: pageNum });
+    
+    if (!response) {
+      response = await tmdbApi.mediaSearch({
+        query: query.trim(),
+        page: pageNum,
+        mediaType: mediaType === "people" ? "person" : mediaType
+      });
+      
+      if (!response || !response.results) {
+        return responseHandler.badRequest(res, "Failed to search media from external API");
+      }
+      
+      // Cache search results for 1 hour
+      cacheService.set(cacheKey, response, { query, page: pageNum }, 60 * 60 * 1000);
+    }
 
     responseHandler.ok(res, response);
-  } catch {
+  } catch (error) {
+    console.error(`[search Error] ${error.message}`);
     responseHandler.error(res);
   }
 };
@@ -51,38 +103,85 @@ const getDetail = async (req, res) => {
   try {
     const { mediaType, mediaId } = req.params;
 
-    const params = { mediaType, mediaId };
+    // Validate mediaId
+    const id = parseInt(mediaId);
+    if (isNaN(id) || id <= 0) {
+      return responseHandler.badRequest(res, "Invalid mediaId");
+    }
 
-    const media = await tmdbApi.mediaDetail(params);
+    // Check cache first
+    const cacheKey = `detail:${mediaType}:${id}`;
+    let media = cacheService.get(cacheKey);
+    
+    if (!media) {
+      const params = { mediaType, mediaId: id };
 
-    media.credits = await tmdbApi.mediaCredits(params);
+      media = await tmdbApi.mediaDetail(params);
+      
+      if (!media || !media.id) {
+        return responseHandler.notFound(res);
+      }
 
-    const videos = await tmdbApi.mediaVideos(params);
+      try {
+        media.credits = await tmdbApi.mediaCredits(params);
+      } catch (err) {
+        console.warn(`[getDetail] Failed to fetch credits: ${err.message}`);
+        media.credits = { cast: [], crew: [] };
+      }
 
-    media.videos = videos;
+      try {
+        const videos = await tmdbApi.mediaVideos(params);
+        media.videos = videos || [];
+      } catch (err) {
+        console.warn(`[getDetail] Failed to fetch videos: ${err.message}`);
+        media.videos = [];
+      }
 
-    const recommend = await tmdbApi.mediaRecommend(params);
+      try {
+        const recommend = await tmdbApi.mediaRecommend(params);
+        media.recommend = recommend?.results || [];
+      } catch (err) {
+        console.warn(`[getDetail] Failed to fetch recommendations: ${err.message}`);
+        media.recommend = [];
+      }
 
-    media.recommend = recommend.results;
+      try {
+        media.images = await tmdbApi.mediaImages(params);
+      } catch (err) {
+        console.warn(`[getDetail] Failed to fetch images: ${err.message}`);
+        media.images = {};
+      }
 
-    media.images = await tmdbApi.mediaImages(params);
+      // Cache detail for 2 hours
+      cacheService.set(cacheKey, media, {}, 2 * 60 * 60 * 1000);
+    }
 
     const tokenDecoded = tokenMiddlerware.tokenDecode(req);
 
     if (tokenDecoded) {
-      const user = await userModel.findById(tokenDecoded.data);
+      try {
+        const user = await userModel.findById(tokenDecoded.data);
 
-      if (user) {
-        const isFavorite = await favoriteModel.findOne({ user: user.id, mediaId });
-        media.isFavorite = isFavorite !== null;
+        if (user) {
+          const isFavorite = await favoriteModel.findOne({ user: user.id, mediaId: id });
+          media.isFavorite = isFavorite !== null;
+        }
+      } catch (err) {
+        console.warn(`[getDetail] Failed to fetch user favorite status: ${err.message}`);
+        media.isFavorite = false;
       }
     }
 
-    media.reviews = await reviewModel.find({ mediaId }).populate("user").sort("-createdAt");
+    try {
+      media.reviews = await reviewModel.find({ mediaId: id }).populate("user").sort("-createdAt");
+    } catch (err) {
+      console.warn(`[getDetail] Failed to fetch reviews: ${err.message}`);
+      media.reviews = [];
+    }
 
     responseHandler.ok(res, media);
-  } catch (e) {
-    console.log(e);
+  } catch (error) {
+    console.error(`[getDetail Error] ${error.message}`);
     responseHandler.error(res);
   }
 };

@@ -40,35 +40,19 @@ const MainLayout = () => {
     if (!user) dispatch(setListFavorites([]));
   }, [user, dispatch]);
 
-  // Global click handler for the entire application
-  const handleGlobalClick = (e) => {
-    // Don't trigger for clicks on the auth modal itself or the topbar
-    if (
-      e.target.closest('[data-auth-modal="true"]') || 
-      e.target.closest('[data-topbar="true"]')
-    ) {
-      return;
-    }
-    
-    // Show auth modal if user is not logged in
-    if (!user) {
-      dispatch(setAuthModalOpen(true));
-    }
-  };
-
   return (
-    <Box onClick={handleGlobalClick} sx={{ minHeight: "100vh" }}>
+    <Box sx={{ minHeight: "100vh" }}>
       {/* global loading */}
       <GlobalLoading />
       {/* global loading */}
 
       {/* login modal */}
-      <AuthModal />
+      <AuthModal data-auth-modal="true" />
       {/* login modal */}
 
       <Box display="flex" minHeight="100vh">
         {/* header */}
-        <Topbar data-topbar="true" />
+        <Topbar />
         {/* header */}
 
         {/* main */}
