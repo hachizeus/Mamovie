@@ -59,10 +59,14 @@ const getList = async (req, res) => {
 
 const getGenres = async (req, res) => {
   try {
-    const { mediaType } = req.params;
+    let { mediaType } = req.params;
+
+    // Clean up parameters
+    mediaType = String(mediaType).toLowerCase().trim();
 
     // Validate mediaType
-    if (!mediaType || !["movie", "tv"].includes(mediaType)) {
+    if (!["movie", "tv"].includes(mediaType)) {
+      console.warn(`Invalid mediaType for genres: ${mediaType}`);
       return responseHandler.badRequest(res, "mediaType must be 'movie' or 'tv'");
     }
 
@@ -73,9 +77,11 @@ const getGenres = async (req, res) => {
     let response = cacheService.get(cacheKey);
     
     if (!response) {
+      console.log(`Fetching genres from TMDB: ${mediaType}`);
       response = await tmdbApi.mediaGenres({ mediaType });
       
       if (!response || !response.genres) {
+        console.error('No genres from TMDB API');
         return responseHandler.badRequest(res, "Failed to fetch genres from external API");
       }
       
@@ -84,7 +90,7 @@ const getGenres = async (req, res) => {
 
     return responseHandler.ok(res, response);
   } catch (error) {
-    console.error(`[getGenres Error] ${error.message}`);
+    console.error(`[getGenres Error] ${error.message}`, error);
     responseHandler.error(res);
   }
 };
