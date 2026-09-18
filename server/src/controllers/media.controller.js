@@ -9,15 +9,22 @@ import cacheService from "../services/cache.service.js";
 const getList = async (req, res) => {
   try {
     const { page = 1 } = req.query;
-    const { mediaType, mediaCategory } = req.params;
+    let { mediaType, mediaCategory } = req.params;
+
+    // Clean up parameters (remove any trailing characters)
+    mediaType = String(mediaType).toLowerCase().trim();
+    mediaCategory = String(mediaCategory).toLowerCase().trim();
 
     // Validate mediaType
-    if (!mediaType || !["movie", "tv"].includes(mediaType)) {
+    if (!["movie", "tv"].includes(mediaType)) {
+      console.warn(`Invalid mediaType: ${mediaType}`);
       return responseHandler.badRequest(res, "mediaType must be 'movie' or 'tv'");
     }
 
     // Validate mediaCategory
-    if (!mediaCategory || !["popular", "top_rated", "upcoming", "now_playing"].includes(mediaCategory)) {
+    const validCategories = ["popular", "top_rated", "upcoming", "now_playing"];
+    if (!validCategories.includes(mediaCategory)) {
+      console.warn(`Invalid mediaCategory: ${mediaCategory}`, { mediaType, mediaCategory });
       return responseHandler.badRequest(res, "mediaCategory must be 'popular', 'top_rated', 'upcoming', or 'now_playing'");
     }
 
@@ -31,9 +38,11 @@ const getList = async (req, res) => {
     let response = cacheService.get(cacheKey);
     
     if (!response) {
+      console.log(`Fetching from TMDB: ${mediaType}/${mediaCategory} page ${pageNum}`);
       response = await tmdbApi.mediaList({ mediaType, mediaCategory, page: pageNum });
       
       if (!response || !response.results) {
+        console.error('No results from TMDB API');
         return responseHandler.badRequest(res, "Failed to fetch media list from external API");
       }
       
@@ -43,7 +52,7 @@ const getList = async (req, res) => {
 
     return responseHandler.ok(res, response);
   } catch (error) {
-    console.error(`[getList Error] ${error.message}`);
+    console.error(`[getList Error] ${error.message}`, error);
     responseHandler.error(res);
   }
 };

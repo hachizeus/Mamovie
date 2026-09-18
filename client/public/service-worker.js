@@ -28,6 +28,11 @@ self.addEventListener('fetch', event => {
     return;
   }
 
+  // Skip chrome extensions and special protocols
+  if (!event.request.url.startsWith('http')) {
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request).then(response => {
       if (response) {
@@ -35,7 +40,7 @@ self.addEventListener('fetch', event => {
       }
 
       return fetch(event.request).then(response => {
-        // Don't cache non-successful responses
+        // Don't cache non-successful responses or non-basic requests
         if (!response || response.status !== 200 || response.type !== 'basic') {
           return response;
         }
