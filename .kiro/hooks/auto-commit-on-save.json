@@ -1,0 +1,15 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Auto-commit and push on file save",
+      "trigger": "PostFileSave",
+      "description": "Auto-commit and push changes whenever a file is saved",
+      "matcher": "client/src|server/src",
+      "action": {
+        "type": "command",
+        "command": "cd c:\\Users\\Lenovo\\Desktop\\movie && git add -A && (git diff-index --quiet HEAD || git commit -m \"auto-save: update $(date +%s)\") && git push -q 2>&1 || true"
+      }
+    }
+  ]
+}

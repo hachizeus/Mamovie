@@ -1,0 +1,14 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Auto-push commits to GitHub",
+      "trigger": "Stop",
+      "description": "Automatically push commits to GitHub after Kiro session ends",
+      "action": {
+        "type": "command",
+        "command": "cd c:\\Users\\Lenovo\\Desktop\\movie && git push -q 2>&1"
+      }
+    }
+  ]
+}
