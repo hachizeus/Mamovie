@@ -9,13 +9,13 @@ const router = express.Router();
 // User routes FIRST (most specific)
 router.use("/user", userRoute);
 
-// Media routes - these are generic/:mediaType paths and must come EARLY
-// because anything else matching /:mediaType will fall through to here
+// Person and review routes (more specific)
+router.use("/:mediaType/:mediaId/person", personRoute);
+router.use("/:mediaType/:mediaId/reviews", reviewRoute);
+
+// Media routes LAST (generic catch-all with params)
 router.use("/:mediaType", mediaRoute);
 
-// Person and review routes - ONLY match when mediaId is numeric
-// Using regex constraint to ensure only numeric IDs match these routes
-router.use("/:mediaType/:mediaId(\\d+)/person", personRoute);
-router.use("/:mediaType/:mediaId(\\d+)/reviews", reviewRoute);
+export default router;
 
 export default router;
