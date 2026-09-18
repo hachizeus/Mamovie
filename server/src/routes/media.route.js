@@ -24,7 +24,6 @@ const validateMediaType = (req, res, next) => {
 router.get(
   "/genres",
   validateMediaType,
-  requestHandler.validate,
   mediaController.getGenres
 );
 
@@ -47,7 +46,6 @@ router.get(
 router.get(
   "/detail/:mediaId",
   validateMediaType,
-  requestHandler.validate,
   mediaController.getDetail
 );
 
