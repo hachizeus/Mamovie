@@ -59,16 +59,7 @@ const getGenres = async (req, res) => {
   try {
     let { mediaType } = req.params;
 
-    // Clean up parameters
-    mediaType = String(mediaType).toLowerCase().trim();
-
-    // Validate mediaType
-    if (!["movie", "tv"].includes(mediaType)) {
-      console.warn(`Invalid mediaType for genres: ${mediaType}`);
-      return responseHandler.badRequest(res, "mediaType must be 'movie' or 'tv'");
-    }
-
-    // Create cache key
+    // mediaType is already validated and lowercased by route middleware
     const cacheKey = `genres:${mediaType}`;
     
     // Check cache first - genres change rarely, cache for 24 hours
