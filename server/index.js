@@ -63,6 +63,26 @@ app.get("/api/v1/proxy", async (req, res) => {
   }
 });
 
+// -------------------- TMDB API PROXY --------------------
+app.use("/api/v1", async (req, res, next) => {
+  try {
+    const tmdbBaseUrl = "https://api.themoviedb.org/3";
+    const targetUrl = tmdbBaseUrl + req.originalUrl.replace("/api/v1", "");
+
+    const response = await fetch(targetUrl, {
+      headers: {
+        Authorization: `Bearer ${process.env.TMDB_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data = await response.json();
+    res.status(response.status).json(data);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch data" });
+  }
+});
+
 // -------------------- HEALTH CHECK --------------------
 app.get("/", (req, res) => {
   res.json({ message: "Mamovie API is running!" });

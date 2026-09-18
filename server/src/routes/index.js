@@ -17,5 +17,3 @@ router.use("/:mediaType/:mediaId/reviews", reviewRoute);
 router.use("/:mediaType", mediaRoute);
 
 export default router;
-
-export default router;
