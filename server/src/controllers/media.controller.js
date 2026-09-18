@@ -12,15 +12,9 @@ const getList = async (req, res) => {
     const { page = 1 } = req.query;
     let { mediaType, mediaCategory } = req.params;
 
-    // Clean up parameters (remove any trailing characters)
-    mediaType = String(mediaType).toLowerCase().trim();
+    // mediaType is already validated and lowercased by route middleware
+    // Clean up mediaCategory
     mediaCategory = String(mediaCategory).toLowerCase().trim();
-
-    // Validate mediaType
-    if (!["movie", "tv"].includes(mediaType)) {
-      console.warn(`Invalid mediaType: ${mediaType}`);
-      return responseHandler.badRequest(res, "mediaType must be 'movie' or 'tv'");
-    }
 
     // Validate mediaCategory
     const validCategories = ["popular", "top_rated", "upcoming", "now_playing"];
