@@ -7,13 +7,12 @@ const get = async (url) => {
       headers: {
         Authorization: `Bearer ${tmdbConfig.token}`,
         "Content-Type": "application/json",
-        Accept: "application/json",
-        "Accept-Encoding": "identity"
+        Accept: "application/json"
       }
     });
     return response.data;
   } catch (error) {
-    console.error(`Axios request failed: ${error.message}`, { url });
+    console.error(`TMDB API Error: ${error.message}`, { url, hasToken: !!tmdbConfig.token });
     throw error;
   }
 };
