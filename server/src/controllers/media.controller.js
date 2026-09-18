@@ -92,10 +92,8 @@ const search = async (req, res) => {
     const { mediaType } = req.params;
     const { query, page = 1 } = req.query;
 
-    // Validate mediaType
-    if (!mediaType || !["movie", "tv", "people"].includes(mediaType)) {
-      return responseHandler.badRequest(res, "mediaType must be 'movie', 'tv', or 'people'");
-    }
+    // mediaType is already validated by route middleware
+    // query and page are already validated by route middleware
 
     if (!query || query.trim().length === 0) {
       return responseHandler.badRequest(res, "Search query is required");
