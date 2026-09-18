@@ -39,12 +39,15 @@ router.get(
 // GET /detail/:mediaId
 router.get(
   "/detail/:mediaId",
+  validateMediaType,
+  requestHandler.validate,
   mediaController.getDetail
 );
 
 // GET /:mediaCategory
 router.get(
   "/:mediaCategory",
+  validateMediaType,
   query("page")
     .optional()
     .isInt({ min: 1, max: 1000 }).withMessage("page must be an integer between 1-1000"),
