@@ -25,6 +25,7 @@ router.get(
 // GET /search
 router.get(
   "/search",
+  validateMediaType,
   query("query")
     .trim()
     .optional()
