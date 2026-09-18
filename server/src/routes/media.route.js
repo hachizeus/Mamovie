@@ -11,7 +11,15 @@ const validateMediaType = param("mediaType")
   .isIn(["movie", "tv"])
   .withMessage("mediaType must be 'movie' or 'tv'");
 
-// GET /search
+// GET /genres - MUST COME BEFORE /:mediaCategory
+router.get(
+  "/genres",
+  validateMediaType,
+  requestHandler.validate,
+  mediaController.getGenres
+);
+
+// GET /search - MUST COME BEFORE /:mediaCategory
 router.get(
   "/search",
   validateMediaType,
@@ -26,15 +34,7 @@ router.get(
   mediaController.search
 );
 
-// GET /genres
-router.get(
-  "/genres",
-  validateMediaType,
-  requestHandler.validate,
-  mediaController.getGenres
-);
-
-// GET /detail/:mediaId
+// GET /detail/:mediaId - MUST COME BEFORE /:mediaCategory
 router.get(
   "/detail/:mediaId",
   validateMediaType,
@@ -45,7 +45,7 @@ router.get(
   mediaController.getDetail
 );
 
-// GET /:mediaCategory
+// GET /:mediaCategory - LAST (catch-all with category validation)
 router.get(
   "/:mediaCategory",
   validateMediaType,
