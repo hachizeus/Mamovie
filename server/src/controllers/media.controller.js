@@ -11,6 +11,16 @@ const getList = async (req, res) => {
     const { page = 1 } = req.query;
     const { mediaType, mediaCategory } = req.params;
 
+    // Validate mediaType
+    if (!mediaType || !["movie", "tv"].includes(mediaType)) {
+      return responseHandler.badRequest(res, "mediaType must be 'movie' or 'tv'");
+    }
+
+    // Validate mediaCategory
+    if (!mediaCategory || !["popular", "top_rated", "upcoming", "now_playing"].includes(mediaCategory)) {
+      return responseHandler.badRequest(res, "mediaCategory must be 'popular', 'top_rated', 'upcoming', or 'now_playing'");
+    }
+
     // Validate page number
     const pageNum = Math.max(1, Math.min(parseInt(page) || 1, 1000));
 
