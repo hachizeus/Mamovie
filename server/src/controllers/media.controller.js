@@ -239,7 +239,10 @@ const getDetail = async (req, res) => {
       media.reviews = [];
     }
 
-    responseHandler.ok(res, media);
+    // Format response to reduce payload size
+    const formattedMedia = responseFormatter.formatMediaDetail(media);
+
+    responseHandler.ok(res, formattedMedia);
   } catch (error) {
     console.error(`[getDetail Error] ${error.message}`);
     responseHandler.error(res);
