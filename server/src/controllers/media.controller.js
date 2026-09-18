@@ -82,12 +82,15 @@ const getGenres = async (req, res) => {
     
     if (!response) {
       console.log(`Fetching genres from TMDB: ${mediaType}`);
-      response = await tmdbApi.mediaGenres({ mediaType });
+      let data = await tmdbApi.mediaGenres({ mediaType });
       
-      if (!response || !response.genres) {
+      if (!data || !data.genres) {
         console.error('No genres from TMDB API');
         return responseHandler.badRequest(res, "Failed to fetch genres from external API");
       }
+      
+      // Format response to reduce payload
+      response = responseFormatter.formatGenres(data);
       
       cacheService.set(cacheKey, response, 24 * 60 * 60 * 1000);
     }
