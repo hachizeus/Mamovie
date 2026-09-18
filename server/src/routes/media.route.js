@@ -10,6 +10,7 @@ const validateMediaType = [
   param("mediaType")
     .trim()
     .toLowerCase()
+    .notEmpty()
     .isIn(["movie", "tv"])
     .withMessage("mediaType must be 'movie' or 'tv'")
 ];
