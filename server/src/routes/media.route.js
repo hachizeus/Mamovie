@@ -1,13 +1,24 @@
 import express from "express";
-import { query } from "express-validator";
+import { query, param } from "express-validator";
 import mediaController from "../controllers/media.controller.js";
 import requestHandler from "../handlers/request.handler.js";
 
 const router = express.Router({ mergeParams: true });
 
+// Validate mediaType from parent route
+const validateMediaType = [
+  param("mediaType")
+    .trim()
+    .toLowerCase()
+    .isIn(["movie", "tv"])
+    .withMessage("mediaType must be 'movie' or 'tv'")
+];
+
 // GET /genres
 router.get(
   "/genres",
+  validateMediaType,
+  requestHandler.validate,
   mediaController.getGenres
 );
 
