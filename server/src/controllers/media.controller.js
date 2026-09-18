@@ -85,6 +85,11 @@ const search = async (req, res) => {
     const { mediaType } = req.params;
     const { query, page = 1 } = req.query;
 
+    // Validate mediaType
+    if (!mediaType || !["movie", "tv", "people"].includes(mediaType)) {
+      return responseHandler.badRequest(res, "mediaType must be 'movie', 'tv', or 'people'");
+    }
+
     if (!query || query.trim().length === 0) {
       return responseHandler.badRequest(res, "Search query is required");
     }
