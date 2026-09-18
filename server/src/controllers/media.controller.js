@@ -52,6 +52,11 @@ const getGenres = async (req, res) => {
   try {
     const { mediaType } = req.params;
 
+    // Validate mediaType
+    if (!mediaType || !["movie", "tv"].includes(mediaType)) {
+      return responseHandler.badRequest(res, "mediaType must be 'movie' or 'tv'");
+    }
+
     // Create cache key
     const cacheKey = `genres:${mediaType}`;
     
