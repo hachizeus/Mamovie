@@ -40,12 +40,15 @@ const getList = async (req, res) => {
     
     if (!response) {
       console.log(`Fetching from TMDB: ${mediaType}/${mediaCategory} page ${pageNum}`);
-      response = await tmdbApi.mediaList({ mediaType, mediaCategory, page: pageNum });
+      let data = await tmdbApi.mediaList({ mediaType, mediaCategory, page: pageNum });
       
-      if (!response || !response.results) {
+      if (!data || !data.results) {
         console.error('No results from TMDB API');
         return responseHandler.badRequest(res, "Failed to fetch media list from external API");
       }
+      
+      // Format response to reduce payload size
+      response = responseFormatter.formatMediaList(data);
       
       // Cache for 30 minutes (media list changes frequently)
       cacheService.set(cacheKey, response, 30 * 60 * 1000);
