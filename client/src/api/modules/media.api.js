@@ -4,7 +4,7 @@ import publicClient from "../client/public.client";
 // TMDB API endpoints
 const mediaEndpoints = {
   list: ({ mediaType, mediaCategory, page }) => `${mediaType}/${mediaCategory}?page=${page}`,
-  detail: ({ mediaType, mediaId }) => `moonflix/movie/detail/${mediaId}`,
+  detail: ({ mediaType, mediaId }) => `${mediaType}/${mediaId}`,
   search: ({ mediaType, query, page }) => `${mediaType}/search?query=${query}&page=${page}`
 };
 
@@ -20,7 +20,7 @@ const mediaApi = {
   },
   getDetail: async ({ mediaType, mediaId }) => {
     try {
-      const response = await privateClient.get(
+      const response = await publicClient.get(
         mediaEndpoints.detail({ mediaType, mediaId })
       );
 
