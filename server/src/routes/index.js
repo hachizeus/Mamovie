@@ -13,8 +13,9 @@ router.use("/user", userRoute);
 // because anything else matching /:mediaType will fall through to here
 router.use("/:mediaType", mediaRoute);
 
-// Person and review routes (more specific - only match when path has right structure)
-router.use("/:mediaType/:mediaId/person", personRoute);
-router.use("/:mediaType/:mediaId/reviews", reviewRoute);
+// Person and review routes - ONLY match when mediaId is numeric
+// Using regex constraint to ensure only numeric IDs match these routes
+router.use("/:mediaType/:mediaId(\\d+)/person", personRoute);
+router.use("/:mediaType/:mediaId(\\d+)/reviews", reviewRoute);
 
 export default router;
