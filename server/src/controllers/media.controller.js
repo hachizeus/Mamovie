@@ -126,15 +126,20 @@ const search = async (req, res) => {
     let response = cacheService.get(cacheKey);
     
     if (!response) {
-      response = await tmdbApi.mediaSearch({
+      console.log(`Searching TMDB: ${mediaType} query="${query}" page ${pageNum}`);
+      let data = await tmdbApi.mediaSearch({
         query: query.trim(),
         page: pageNum,
         mediaType: mediaType === "people" ? "person" : mediaType
       });
       
-      if (!response || !response.results) {
+      if (!data || !data.results) {
+        console.error('No search results from TMDB API');
         return responseHandler.badRequest(res, "Failed to search media from external API");
       }
+      
+      // Format response to reduce payload
+      response = responseFormatter.formatSearchResults(data);
       
       // Cache search results for 1 hour
       cacheService.set(cacheKey, response, 60 * 60 * 1000);
