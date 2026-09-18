@@ -139,11 +139,8 @@ const getDetail = async (req, res) => {
   try {
     const { mediaType, mediaId } = req.params;
 
-    // Validate mediaType
-    if (!mediaType || !["movie", "tv"].includes(mediaType)) {
-      return responseHandler.badRequest(res, "mediaType must be 'movie' or 'tv'");
-    }
-
+    // mediaType is already validated by route middleware
+    
     // Validate mediaId
     const id = parseInt(mediaId);
     if (isNaN(id) || id <= 0) {
