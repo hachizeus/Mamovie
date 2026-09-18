@@ -9,11 +9,12 @@ const router = express.Router();
 // User routes FIRST (most specific)
 router.use("/user", userRoute);
 
-// Person and review routes (more specific)
+// Media routes - these are generic/:mediaType paths and must come EARLY
+// because anything else matching /:mediaType will fall through to here
+router.use("/:mediaType", mediaRoute);
+
+// Person and review routes (more specific - only match when path has right structure)
 router.use("/:mediaType/:mediaId/person", personRoute);
 router.use("/:mediaType/:mediaId/reviews", reviewRoute);
-
-// Media routes LAST (generic catch-all with params)
-router.use("/:mediaType", mediaRoute);
 
 export default router;
