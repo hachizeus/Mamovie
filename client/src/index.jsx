@@ -17,3 +17,16 @@ root.render(
   </Provider>
   // </React.StrictMode>
 );
+
+// Register service worker for offline support and caching
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(registration => {
+        console.log('[SW] Service Worker registered:', registration);
+      })
+      .catch(error => {
+        console.log('[SW] Service Worker registration failed:', error);
+      });
+  });
+}
