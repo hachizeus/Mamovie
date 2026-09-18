@@ -1,5 +1,5 @@
 /**
- * Server-side cache service for TMDB API responses
+ * Simple server-side cache service for TMDB API responses
  * Prevents redundant calls to TMDB API for frequently requested data
  */
 class CacheService {
@@ -10,22 +10,9 @@ class CacheService {
   }
 
   /**
-   * Generate cache key from endpoint and parameters
+   * Get value from cache by key
    */
-  generateKey(endpoint, params = {}) {
-    const paramStr = Object.keys(params)
-      .filter(key => params[key] !== undefined && params[key] !== null)
-      .sort()
-      .map(key => `${key}=${JSON.stringify(params[key])}`)
-      .join('&');
-    return `${endpoint}${paramStr ? ':' + paramStr : ''}`;
-  }
-
-  /**
-   * Get value from cache
-   */
-  get(endpoint, params = {}) {
-    const key = this.generateKey(endpoint, params);
+  get(key) {
     const cached = this.cache.get(key);
     if (cached) {
       console.log(`[Cache HIT] ${key}`);
@@ -36,9 +23,7 @@ class CacheService {
   /**
    * Set value in cache with optional TTL
    */
-  set(endpoint, data, params = {}, ttl = this.defaultTtl) {
-    const key = this.generateKey(endpoint, params);
-    
+  set(key, data, ttl = this.defaultTtl) {
     // Clear existing timer if any
     if (this.timers.has(key)) {
       clearTimeout(this.timers.get(key));
@@ -61,8 +46,7 @@ class CacheService {
   /**
    * Clear specific cache entry
    */
-  clear(endpoint, params = {}) {
-    const key = this.generateKey(endpoint, params);
+  clear(key) {
     if (this.timers.has(key)) {
       clearTimeout(this.timers.get(key));
       this.timers.delete(key);
