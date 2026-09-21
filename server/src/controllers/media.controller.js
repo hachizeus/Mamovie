@@ -8,6 +8,8 @@ import cacheService from "../services/cache.service.js";
 
 const getList = async (req, res) => {
   try {
+    console.log(`[getList] Request: mediaType=${req.params.mediaType}, mediaCategory=${req.params.mediaCategory}, page=${req.query.page}`);
+    
     const { page = 1 } = req.query;
     const { mediaType, mediaCategory } = req.params;
 
@@ -21,19 +23,23 @@ const getList = async (req, res) => {
     let response = cacheService.get(cacheKey);
     
     if (!response) {
+      console.log(`[getList] Cache miss, fetching from TMDB`);
       response = await tmdbApi.mediaList({ mediaType, mediaCategory, page: pageNum });
       
       if (!response || !response.results) {
+        console.error(`[getList] Invalid response from TMDB:`, response);
         return responseHandler.badRequest(res, "Failed to fetch media list from external API");
       }
       
       // Cache for 30 minutes (media list changes frequently)
       cacheService.set(cacheKey, response, 30 * 60 * 1000);
+    } else {
+      console.log(`[getList] Cache hit`);
     }
 
     return responseHandler.ok(res, response);
   } catch (error) {
-    console.error(`[getList Error] ${error.message}`);
+    console.error(`[getList Error] ${error.message}`, error.stack);
     responseHandler.error(res);
   }
 };
