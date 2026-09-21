@@ -13,9 +13,9 @@ const getUrl = (endpoint, params) => {
     qs = queryParams.toString();
   }
 
-  // Use the Bearer token authentication
-  const separator = qs ? "&" : "?";
-  return `${baseUrl}${endpoint}${separator}${qs}`;
+  // Build URL with query string only if there are params
+  const url = qs ? `${baseUrl}${endpoint}?${qs}` : `${baseUrl}${endpoint}`;
+  return url;
 };
 
 export default { getUrl, token };
