@@ -28,7 +28,7 @@ router.get(
     .notEmpty().withMessage("query parameter is required")
     .isLength({ min: 1, max: 100 }).withMessage("query must be between 1-100 characters"),
   query("page")
-    .optional()
+    .optional({ checkFalsy: true })
     .toInt()
     .isInt({ min: 1, max: 1000 }).withMessage("page must be an integer between 1-1000"),
   requestHandler.validate,
