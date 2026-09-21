@@ -54,10 +54,6 @@ router.get(
     .trim()
     .isIn(["popular", "top_rated", "upcoming", "now_playing"])
     .withMessage("mediaCategory must be 'popular', 'top_rated', 'upcoming', or 'now_playing'"),
-  query("page")
-    .optional({ checkFalsy: true })
-    .toInt()
-    .isInt({ min: 1, max: 1000 }).withMessage("page must be an integer between 1-1000"),
   requestHandler.validate,
   mediaController.getList
 );
