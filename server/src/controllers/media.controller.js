@@ -141,10 +141,23 @@ const getDetail = async (req, res) => {
     if (!media) {
       const params = { mediaType, mediaId: id };
 
-      console.log(`[getDetail] Calling tmdbApi.mediaDetail with:`, params);
-      media = await tmdbApi.mediaDetail(params);
-      
-      console.log(`[getDetail] Response from TMDB:`, media ? `${media.id} - ${media.title}` : 'null');
+      try {
+        console.log(`[getDetail] Calling tmdbApi.mediaDetail with:`, params);
+        media = await tmdbApi.mediaDetail(params);
+        
+        if (!media || !media.id) {
+          console.warn(`[getDetail] Invalid response from TMDB - no id field`);
+          return responseHandler.notFound(res);
+        }
+        
+        console.log(`[getDetail] Response from TMDB:`, `${media.id} - ${media.title}`);
+      } catch (err) {
+        console.error(`[getDetail] Failed to fetch media detail: ${err.message}`);
+        if (err.response?.status === 404) {
+          return responseHandler.notFound(res);
+        }
+        return responseHandler.badRequest(res, `Failed to fetch media detail: ${err.message}`);
+      }
 
       try {
         media.credits = await tmdbApi.mediaCredits(params);
