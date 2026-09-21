@@ -1,0 +1,68 @@
+/* MediaDetail optimization - move responsive styles to CSS to reduce JS execution */
+
+.media-detail-container {
+  color: inherit;
+}
+
+.media-content-wrapper {
+  margin-top: -10rem;
+}
+
+.media-content-flex {
+  display: flex;
+  flex-direction: column;
+}
+
+.media-poster {
+  width: 70%;
+  margin: 0 auto 2rem;
+}
+
+.media-info {
+  width: 100%;
+  color: inherit;
+}
+
+.media-title {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+/* Tablet and above */
+@media (min-width: 768px) {
+  .media-content-wrapper {
+    margin-top: -15rem;
+  }
+
+  .media-content-flex {
+    flex-direction: row;
+  }
+
+  .media-poster {
+    width: 50%;
+    margin: 0 2rem 0 0;
+  }
+
+  .media-info {
+    width: 60%;
+  }
+
+  .media-title {
+    font-size: 2rem;
+  }
+}
+
+/* Large screens and above */
+@media (min-width: 1200px) {
+  .media-content-wrapper {
+    margin-top: -20rem;
+  }
+
+  .media-poster {
+    width: 40%;
+  }
+
+  .media-title {
+    font-size: 4rem;
+  }
+}
