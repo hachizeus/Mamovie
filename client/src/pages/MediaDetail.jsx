@@ -49,12 +49,21 @@ const MediaDetail = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
     const getMedia = async () => {
+      // Only show loading for new requests, not cached ones
       dispatch(setGlobalLoading(true));
       const { response, err } = await mediaApi.getDetail({ mediaType, mediaId });
       dispatch(setGlobalLoading(false));
 
       if (response) {
-        setMedia(response);
+        // Use callback form to prevent stale closure issues
+        setMedia(prevMedia => {
+          // Only update if it's a different movie
+          if (prevMedia?.id !== response.id) {
+            return response;
+          }
+          return prevMedia;
+        });
+        
         setIsFavorite(response.isFavorite);
         setGenres(response.genres.splice(0, 2));
       }
