@@ -141,11 +141,10 @@ const getDetail = async (req, res) => {
     if (!media) {
       const params = { mediaType, mediaId: id };
 
+      console.log(`[getDetail] Calling tmdbApi.mediaDetail with:`, params);
       media = await tmdbApi.mediaDetail(params);
       
-      if (!media || !media.id) {
-        return responseHandler.notFound(res);
-      }
+      console.log(`[getDetail] Response from TMDB:`, media ? `${media.id} - ${media.title}` : 'null');
 
       try {
         media.credits = await tmdbApi.mediaCredits(params);
