@@ -17,6 +17,7 @@ import uiConfigs from "../configs/ui.configs";
 import tmdbConfigs from "../api/configs/tmdb.configs";
 import mediaApi from "../api/modules/media.api";
 import favoriteApi from "../api/modules/favorite.api";
+import "./MediaDetail.css";
 
 import { setGlobalLoading } from "../redux/features/globalLoadingSlice";
 import { setAuthModalOpen } from "../redux/features/authModalSlice";
