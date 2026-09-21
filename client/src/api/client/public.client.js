@@ -14,14 +14,11 @@ const publicClient = axios.create({
 publicClient.interceptors.request.use(async config => {
   // Check cache for GET requests (safe to cache)
   if (config.method === 'get' || config.method === undefined) {
-    const cached = apiCache.get(config.url, config.params);
+    const cacheKey = config.url + (config.params ? '?' + queryString.stringify(config.params) : '');
+    const cached = apiCache.get(cacheKey);
     if (cached) {
-      // Return cached data as a resolved promise
-      return Promise.reject({
-        config,
-        response: { data: cached },
-        message: 'Cache hit'
-      });
+      // Return cached data immediately
+      return Promise.resolve({ data: cached });
     }
   }
 
@@ -37,16 +34,13 @@ publicClient.interceptors.response.use((response) => {
   // Cache successful GET responses
   if (response.config.method === 'get' || response.config.method === undefined) {
     const data = response.data;
-    apiCache.set(response.config.url, data, response.config.params);
+    const cacheKey = response.config.url + (response.config.params ? '?' + queryString.stringify(response.config.params) : '');
+    apiCache.set(cacheKey, data);
   }
 
   if (response && response.data) return response.data;
   return response;
 }, (err) => {
-  // Handle cache hits
-  if (err.message === 'Cache hit' && err.response) {
-    return err.response.data;
-  }
   throw err.response ? err.response.data : new Error("Network Error");
 });
 
