@@ -1,12 +1,18 @@
 import privateClient from "../client/private.client";
 import publicClient from "../client/public.client";
 
+// TMDB API endpoints
+const mediaEndpoints = {
+  list: ({ mediaType, mediaCategory, page }) => `${mediaType}/${mediaCategory}?page=${page}`,
+  detail: ({ mediaType, mediaId }) => `${mediaType}/${mediaId}`,
+  search: ({ mediaType, query, page }) => `search/${mediaType}?query=${query}&page=${page}`
+};
+
 const mediaApi = {
-  getList: async ({ mediaType, mediaCategory, page = 1 }) => {
+  getList: async ({ mediaType, mediaCategory, page }) => {
     try {
       const response = await publicClient.get(
-        `${mediaType}/${mediaCategory}`,
-        { params: { page } }
+        mediaEndpoints.list({ mediaType, mediaCategory, page })
       );
       return { response };
     } catch (err) { 
@@ -17,7 +23,7 @@ const mediaApi = {
   getDetail: async ({ mediaType, mediaId }) => {
     try {
       const response = await privateClient.get(
-        `${mediaType}/${mediaId}`
+        mediaEndpoints.detail({ mediaType, mediaId })
       );
       return { response };
     } catch (err) { 
@@ -25,11 +31,10 @@ const mediaApi = {
     }
   },
 
-  search: async ({ mediaType, query, page = 1 }) => {
+  search: async ({ mediaType, query, page }) => {
     try {
       const response = await publicClient.get(
-        `search/${mediaType}`,
-        { params: { query, page } }
+        mediaEndpoints.search({ mediaType, query, page })
       );
       return { response };
     } catch (err) { 
