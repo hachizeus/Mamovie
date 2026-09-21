@@ -11,17 +11,8 @@ const publicClient = axios.create({
   }
 });
 
-publicClient.interceptors.request.use(async config => {
-  // Check cache for GET requests (safe to cache)
-  if (config.method === 'get' || config.method === undefined) {
-    const cacheKey = config.url + (config.params ? '?' + queryString.stringify(config.params) : '');
-    const cached = apiCache.get(cacheKey);
-    if (cached) {
-      // Return cached data immediately
-      return Promise.resolve({ data: cached });
-    }
-  }
-
+publicClient.interceptors.request.use(config => {
+  // Add header
   return {
     ...config,
     headers: {
@@ -31,17 +22,23 @@ publicClient.interceptors.request.use(async config => {
 });
 
 publicClient.interceptors.response.use((response) => {
-  // Cache successful GET responses
+  // Cache successful GET requests
   if (response.config.method === 'get' || response.config.method === undefined) {
-    const data = response.data;
     const cacheKey = response.config.url + (response.config.params ? '?' + queryString.stringify(response.config.params) : '');
-    apiCache.set(cacheKey, data);
+    apiCache.set(cacheKey, response.data);
   }
 
-  if (response && response.data) return response.data;
+  // Return the data directly (unwrap from axios response envelope)
+  if (response && response.data) {
+    return response.data;
+  }
   return response;
 }, (err) => {
-  throw err.response ? err.response.data : new Error("Network Error");
+  // For errors, return the error response data if available
+  if (err.response && err.response.data) {
+    throw err.response.data;
+  }
+  throw new Error("Network Error");
 });
 
 export default publicClient;
