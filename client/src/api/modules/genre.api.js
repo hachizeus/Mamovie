@@ -1,35 +1,30 @@
 import publicClient from "../client/public.client";
 import apiCache from "../utils/cache";
 
-const genreEndpoints = {
-  list: ({ mediaType }) => `${mediaType}/genres`
-};
-
 const genreApi = {
   getList: async ({ mediaType }) => {
     try {
-      // Genres don't change frequently, cache for 24 hours
-      const cachedGenres = apiCache.get(
-        genreEndpoints.list({ mediaType }),
-        { mediaType }
-      );
+      // Check cache first - genres change rarely, cache for 24 hours
+      const cacheKey = `genres:${mediaType}`;
+      let cached = apiCache.get(cacheKey);
       
-      if (cachedGenres) {
-        return { response: cachedGenres };
+      if (cached) {
+        return { response: cached };
       }
 
-      const response = await publicClient.get(genreEndpoints.list({ mediaType }));
-
-      // Cache for 24 hours (86400000 ms)
-      apiCache.set(
-        genreEndpoints.list({ mediaType }),
-        response,
-        { mediaType },
-        24 * 60 * 60 * 1000
+      const response = await publicClient.get(
+        `genre/${mediaType}/list`
       );
 
+      if (response) {
+        // Cache for 24 hours
+        apiCache.set(cacheKey, response);
+      }
+
       return { response };
-    } catch (err) { return { err }; }
+    } catch (err) { 
+      return { err }; 
+    }
   }
 };
 
