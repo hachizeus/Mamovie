@@ -214,17 +214,21 @@ const MediaDetail = () => {
 
           {/* media backdrop */}
           {media.images.backdrops.length > 0 && (
-            <Container header="backdrops">
-              <BackdropSlide backdrops={media.images.backdrops} />
-            </Container>
+            <Suspense fallback={<div style={{ padding: "2rem", textAlign: "center" }}>Loading backdrops...</div>}>
+              <Container header="backdrops">
+                <BackdropSlide backdrops={media.images.backdrops} />
+              </Container>
+            </Suspense>
           )}
           {/* media backdrop */}
 
           {/* media posters */}
           {media.images.posters.length > 0 && (
-            <Container header="posters">
-              <PosterSlide posters={media.images.posters} />
-            </Container>
+            <Suspense fallback={<div style={{ padding: "2rem", textAlign: "center" }}>Loading posters...</div>}>
+              <Container header="posters">
+                <PosterSlide posters={media.images.posters} />
+              </Container>
+            </Suspense>
           )}
           {/* media posters */}
 
@@ -237,13 +241,17 @@ const MediaDetail = () => {
           {/* media recommendation */}
           <Container header="you may also like">
             {media.recommend.length > 0 && (
-              <RecommendSlide medias={media.recommend} mediaType={mediaType} />
+              <Suspense fallback={<div style={{ padding: "2rem", textAlign: "center" }}>Loading recommendations...</div>}>
+                <RecommendSlide medias={media.recommend} mediaType={mediaType} />
+              </Suspense>
             )}
             {media.recommend.length === 0 && (
-              <MediaSlide
-                mediaType={mediaType}
-                mediaCategory={tmdbConfigs.mediaCategory.top_rated}
-              />
+              <Suspense fallback={<div style={{ padding: "2rem", textAlign: "center" }}>Loading recommendations...</div>}>
+                <MediaSlide
+                  mediaType={mediaType}
+                  mediaCategory={tmdbConfigs.mediaCategory.top_rated}
+                />
+              </Suspense>
             )}
           </Container>
           {/* media recommendation */}
