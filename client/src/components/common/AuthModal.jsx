@@ -19,15 +19,26 @@ const AuthModal = () => {
   const [action, setAction] = useState(actionState.signin);
 
   useEffect(() => {
-    if (authModalOpen) setAction(actionState.signin);
+    if (authModalOpen === true) {
+      setAction(actionState.signin);
+      console.log("[AuthModal] Opening signin form");
+    }
   }, [authModalOpen]);
 
-  const handleClose = () => dispatch(setAuthModalOpen(false));
+  const handleClose = () => {
+    console.log("[AuthModal] Closing");
+    dispatch(setAuthModalOpen(false));
+  };
 
   const switchAuthState = (state) => setAction(state);
 
+  // Only render if explicitly opened
+  if (!authModalOpen) {
+    return null;
+  }
+
   return (
-    <Modal open={authModalOpen} onClose={handleClose}>
+    <Modal open={authModalOpen === true} onClose={handleClose}>
       <Box 
         data-auth-modal="true"
         sx={{
