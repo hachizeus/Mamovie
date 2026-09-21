@@ -46,9 +46,8 @@ const MainLayout = () => {
       <GlobalLoading />
       {/* global loading */}
 
-      {/* login modal */}
-      <AuthModal data-auth-modal="true" />
-      {/* login modal */}
+      {/* Note: Auth modal disabled - users can browse freely, signin only for favorites */}
+      {/* <AuthModal data-auth-modal="true" /> */}
 
       <Box display="flex" minHeight="100vh">
         {/* header */}
