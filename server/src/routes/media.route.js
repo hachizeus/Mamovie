@@ -11,15 +11,7 @@ const validateMediaType = param("mediaType")
   .isIn(["movie", "tv"])
   .withMessage("mediaType must be 'movie' or 'tv'");
 
-// GET /genres - MUST COME BEFORE /:mediaCategory
-router.get(
-  "/genres",
-  validateMediaType,
-  requestHandler.validate,
-  mediaController.getGenres
-);
-
-// GET /search - MUST COME BEFORE /:mediaCategory
+// GET /search
 router.get(
   "/search",
   validateMediaType,
@@ -27,11 +19,22 @@ router.get(
     .trim()
     .notEmpty().withMessage("query parameter is required")
     .isLength({ min: 1, max: 100 }).withMessage("query must be between 1-100 characters"),
+  query("page")
+    .optional()
+    .isInt({ min: 1, max: 1000 }).withMessage("page must be an integer between 1-1000"),
   requestHandler.validate,
   mediaController.search
 );
 
-// GET /detail/:mediaId - MUST COME BEFORE /:mediaCategory
+// GET /genres
+router.get(
+  "/genres",
+  validateMediaType,
+  requestHandler.validate,
+  mediaController.getGenres
+);
+
+// GET /detail/:mediaId
 router.get(
   "/detail/:mediaId",
   validateMediaType,
@@ -42,7 +45,7 @@ router.get(
   mediaController.getDetail
 );
 
-// GET /:mediaCategory - LAST (catch-all with category validation)
+// GET /:mediaCategory
 router.get(
   "/:mediaCategory",
   validateMediaType,
@@ -50,6 +53,9 @@ router.get(
     .trim()
     .isIn(["popular", "top_rated", "upcoming", "now_playing"])
     .withMessage("mediaCategory must be 'popular', 'top_rated', 'upcoming', or 'now_playing'"),
+  query("page")
+    .optional()
+    .isInt({ min: 1, max: 1000 }).withMessage("page must be an integer between 1-1000"),
   requestHandler.validate,
   mediaController.getList
 );

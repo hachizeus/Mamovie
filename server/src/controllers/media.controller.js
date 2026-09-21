@@ -11,16 +11,6 @@ const getList = async (req, res) => {
     const { page = 1 } = req.query;
     const { mediaType, mediaCategory } = req.params;
 
-    // Validate mediaType
-    if (!mediaType || !["movie", "tv"].includes(mediaType)) {
-      return responseHandler.badRequest(res, "mediaType must be 'movie' or 'tv'");
-    }
-
-    // Validate mediaCategory
-    if (!mediaCategory || !["popular", "top_rated", "upcoming", "now_playing"].includes(mediaCategory)) {
-      return responseHandler.badRequest(res, "mediaCategory must be 'popular', 'top_rated', 'upcoming', or 'now_playing'");
-    }
-
     // Validate page number
     const pageNum = Math.max(1, Math.min(parseInt(page) || 1, 1000));
 
@@ -52,11 +42,6 @@ const getGenres = async (req, res) => {
   try {
     const { mediaType } = req.params;
 
-    // Validate mediaType
-    if (!mediaType || !["movie", "tv"].includes(mediaType)) {
-      return responseHandler.badRequest(res, "mediaType must be 'movie' or 'tv'");
-    }
-
     // Create cache key
     const cacheKey = `genres:${mediaType}`;
     
@@ -84,11 +69,6 @@ const search = async (req, res) => {
   try {
     const { mediaType } = req.params;
     const { query, page = 1 } = req.query;
-
-    // Validate mediaType
-    if (!mediaType || !["movie", "tv", "people"].includes(mediaType)) {
-      return responseHandler.badRequest(res, "mediaType must be 'movie', 'tv', or 'people'");
-    }
 
     if (!query || query.trim().length === 0) {
       return responseHandler.badRequest(res, "Search query is required");
@@ -128,11 +108,6 @@ const search = async (req, res) => {
 const getDetail = async (req, res) => {
   try {
     const { mediaType, mediaId } = req.params;
-
-    // Validate mediaType
-    if (!mediaType || !["movie", "tv"].includes(mediaType)) {
-      return responseHandler.badRequest(res, "mediaType must be 'movie' or 'tv'");
-    }
 
     // Validate mediaId
     const id = parseInt(mediaId);
