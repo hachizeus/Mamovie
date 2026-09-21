@@ -43,6 +43,7 @@ publicClient.interceptors.response.use((response) => {
   if (response.config.method === 'get' || response.config.method === undefined) {
     const cacheKey = response.config.url + (response.config.params ? '?' + queryString.stringify(response.config.params) : '');
     apiCache.set(cacheKey, response.data);
+    console.log(`[Cache SET] ${cacheKey}`);
   }
 
   // Return the data directly (unwrap from axios response envelope)
