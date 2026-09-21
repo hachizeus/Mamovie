@@ -39,11 +39,22 @@ publicClient.interceptors.request.use(config => {
 });
 
 publicClient.interceptors.response.use((response) => {
-  // Cache successful GET requests
+  // Cache successful GET requests with appropriate TTL
   if (response.config.method === 'get' || response.config.method === undefined) {
     const cacheKey = response.config.url + (response.config.params ? '?' + queryString.stringify(response.config.params) : '');
-    apiCache.set(cacheKey, response.data);
-    console.log(`[Cache SET] ${cacheKey}`);
+    
+    // Determine TTL based on endpoint type
+    let ttl = 5 * 60 * 1000; // default 5 minutes
+    if (cacheKey.includes('/detail/')) {
+      ttl = 2 * 60 * 60 * 1000; // detail pages: 2 hours
+    } else if (cacheKey.includes('/genre')) {
+      ttl = 24 * 60 * 60 * 1000; // genres: 24 hours
+    } else if (cacheKey.includes('popular') || cacheKey.includes('top_rated')) {
+      ttl = 60 * 60 * 1000; // lists: 1 hour
+    }
+    
+    apiCache.set(cacheKey, response.data, {}, ttl);
+    console.log(`[Cache SET] ${cacheKey} (TTL: ${ttl / 1000 / 60}m)`);
   }
 
   // Return the data directly (unwrap from axios response envelope)
