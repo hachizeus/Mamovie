@@ -41,9 +41,8 @@ const MediaItem = ({ media, mediaType }) => {
 
   return (
     <Box 
-      onClick={handleItemClick}
-      component={user ? "a" : "div"}
-      href={user ? (mediaType !== "people" ? routesGen.mediaDetail(mediaType, media.mediaId || media.id) : routesGen.person(media.id)) : undefined}
+      component="a"
+      href={mediaType !== "people" ? routesGen.mediaDetail(mediaType, media.mediaId || media.id) : routesGen.person(media.id)}
       sx={{
         ...uiConfigs.style.backgroundImage(posterPath),
         paddingTop: "160%",
