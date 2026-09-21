@@ -25,11 +25,11 @@ import { addFavorite, removeFavorite } from "../redux/features/userSlice";
 
 import CastSlide from "../components/common/CastSlide";
 import MediaVideosSlide from "../components/common/MediaVideosSlide";
-import BackdropSlide from "../components/common/BackdropSlide";
-import PosterSlide from "../components/common/PosterSlide";
-import RecommendSlide from "../components/common/RecommendSlide";
-import MediaSlide from "../components/common/MediaSlide";
-// Lazy load non-critical components
+// Lazy load non-critical components below the fold
+const BackdropSlide = lazy(() => import("../components/common/BackdropSlide"));
+const PosterSlide = lazy(() => import("../components/common/PosterSlide"));
+const RecommendSlide = lazy(() => import("../components/common/RecommendSlide"));
+const MediaSlide = lazy(() => import("../components/common/MediaSlide"));
 const MediaReview = lazy(() => import("../components/common/MediaReview"));
 
 const MediaDetail = () => {
