@@ -121,11 +121,16 @@ const getDetail = async (req, res) => {
   try {
     const { mediaType, mediaId } = req.params;
 
+    console.log(`[getDetail] Request: mediaType=${mediaType}, mediaId=${mediaId}`);
+
     // Validate mediaId
     const id = parseInt(mediaId);
     if (isNaN(id) || id <= 0) {
+      console.error(`[getDetail] Invalid mediaId: ${mediaId}`);
       return responseHandler.badRequest(res, "Invalid mediaId");
     }
+
+    console.log(`[getDetail] Parsed mediaId: ${id}`);
 
     // Create cache key
     const cacheKey = `detail:${mediaType}:${id}`;
