@@ -11,22 +11,34 @@ const getList = async (req, res) => {
     const { page = 1 } = req.query;
     const { mediaType, mediaCategory } = req.params;
 
+    // Validate mediaType
+    if (!mediaType || !["movie", "tv"].includes(mediaType)) {
+      return responseHandler.badRequest(res, "mediaType must be 'movie' or 'tv'");
+    }
+
+    // Validate mediaCategory
+    if (!mediaCategory || !["popular", "top_rated", "upcoming", "now_playing"].includes(mediaCategory)) {
+      return responseHandler.badRequest(res, "mediaCategory must be 'popular', 'top_rated', 'upcoming', or 'now_playing'");
+    }
+
     // Validate page number
     const pageNum = Math.max(1, Math.min(parseInt(page) || 1, 1000));
 
+    // Create cache key
+    const cacheKey = `${mediaType}:${mediaCategory}:page${pageNum}`;
+    
     // Check cache first
-    const cacheKey = `${mediaType}:${mediaCategory}`;
-    let response = cacheService.get(cacheKey, { page: pageNum });
-
+    let response = cacheService.get(cacheKey);
+    
     if (!response) {
       response = await tmdbApi.mediaList({ mediaType, mediaCategory, page: pageNum });
-
+      
       if (!response || !response.results) {
         return responseHandler.badRequest(res, "Failed to fetch media list from external API");
       }
-
+      
       // Cache for 30 minutes (media list changes frequently)
-      cacheService.set(cacheKey, response, { page: pageNum }, 30 * 60 * 1000);
+      cacheService.set(cacheKey, response, 30 * 60 * 1000);
     }
 
     return responseHandler.ok(res, response);
@@ -40,18 +52,25 @@ const getGenres = async (req, res) => {
   try {
     const { mediaType } = req.params;
 
-    // Check cache first - genres change rarely, cache for 24 hours
-    const cacheKey = `genres:${mediaType}`;
-    let response = cacheService.get(cacheKey);
+    // Validate mediaType
+    if (!mediaType || !["movie", "tv"].includes(mediaType)) {
+      return responseHandler.badRequest(res, "mediaType must be 'movie' or 'tv'");
+    }
 
+    // Create cache key
+    const cacheKey = `genres:${mediaType}`;
+    
+    // Check cache first - genres change rarely, cache for 24 hours
+    let response = cacheService.get(cacheKey);
+    
     if (!response) {
       response = await tmdbApi.mediaGenres({ mediaType });
-
+      
       if (!response || !response.genres) {
         return responseHandler.badRequest(res, "Failed to fetch genres from external API");
       }
-
-      cacheService.set(cacheKey, response, {}, 24 * 60 * 60 * 1000);
+      
+      cacheService.set(cacheKey, response, 24 * 60 * 60 * 1000);
     }
 
     return responseHandler.ok(res, response);
@@ -66,6 +85,11 @@ const search = async (req, res) => {
     const { mediaType } = req.params;
     const { query, page = 1 } = req.query;
 
+    // Validate mediaType
+    if (!mediaType || !["movie", "tv", "people"].includes(mediaType)) {
+      return responseHandler.badRequest(res, "mediaType must be 'movie', 'tv', or 'people'");
+    }
+
     if (!query || query.trim().length === 0) {
       return responseHandler.badRequest(res, "Search query is required");
     }
@@ -73,23 +97,25 @@ const search = async (req, res) => {
     // Validate page number
     const pageNum = Math.max(1, Math.min(parseInt(page) || 1, 1000));
 
+    // Create cache key
+    const cacheKey = `search:${mediaType}:${query}:page${pageNum}`;
+    
     // Check cache first
-    const cacheKey = `search:${mediaType}`;
-    let response = cacheService.get(cacheKey, { query, page: pageNum });
-
+    let response = cacheService.get(cacheKey);
+    
     if (!response) {
       response = await tmdbApi.mediaSearch({
         query: query.trim(),
         page: pageNum,
         mediaType: mediaType === "people" ? "person" : mediaType
       });
-
+      
       if (!response || !response.results) {
         return responseHandler.badRequest(res, "Failed to search media from external API");
       }
-
+      
       // Cache search results for 1 hour
-      cacheService.set(cacheKey, response, { query, page: pageNum }, 60 * 60 * 1000);
+      cacheService.set(cacheKey, response, 60 * 60 * 1000);
     }
 
     responseHandler.ok(res, response);
@@ -103,21 +129,28 @@ const getDetail = async (req, res) => {
   try {
     const { mediaType, mediaId } = req.params;
 
+    // Validate mediaType
+    if (!mediaType || !["movie", "tv"].includes(mediaType)) {
+      return responseHandler.badRequest(res, "mediaType must be 'movie' or 'tv'");
+    }
+
     // Validate mediaId
     const id = parseInt(mediaId);
     if (isNaN(id) || id <= 0) {
       return responseHandler.badRequest(res, "Invalid mediaId");
     }
 
-    // Check cache first
+    // Create cache key
     const cacheKey = `detail:${mediaType}:${id}`;
+    
+    // Check cache first
     let media = cacheService.get(cacheKey);
-
+    
     if (!media) {
       const params = { mediaType, mediaId: id };
 
       media = await tmdbApi.mediaDetail(params);
-
+      
       if (!media || !media.id) {
         return responseHandler.notFound(res);
       }
@@ -153,7 +186,7 @@ const getDetail = async (req, res) => {
       }
 
       // Cache detail for 2 hours
-      cacheService.set(cacheKey, media, {}, 2 * 60 * 60 * 1000);
+      cacheService.set(cacheKey, media, 2 * 60 * 60 * 1000);
     }
 
     const tokenDecoded = tokenMiddlerware.tokenDecode(req);
