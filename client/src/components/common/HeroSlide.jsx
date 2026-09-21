@@ -64,10 +64,7 @@ const HeroSlide = ({ mediaType, mediaCategory }) => {
   }, [mediaType, mediaCategory, dispatch]);
 
   const handleWatchNowClick = (e) => {
-    if (!user) {
-      e.preventDefault();
-      dispatch(setAuthModalOpen(true));
-    }
+    // Allow users to view media details without signin
   };
 
   return (
