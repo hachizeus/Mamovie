@@ -175,10 +175,9 @@ const HeroSlide = ({ mediaType, mediaCategory }) => {
                     variant="contained"
                     size="large"
                     startIcon={<PlayArrowIcon />}
-                    component={user ? "a" : "button"}
-                    href={user ? routesGen.mediaDetail(mediaType, movie.id) : undefined}
-                    onClick={handleWatchNowClick}
-                    sx={{ width: "max-content" }}
+                    component="a"
+                    href={routesGen.mediaDetail(mediaType, movie.id)}
+                    sx={{ width: "max-content", textDecoration: "none", color: "inherit" }}
                   >
                     watch now
                   </Button>
