@@ -1,7 +1,5 @@
 import express from "express";
-import { query } from "express-validator";
 import mediaController from "../controllers/media.controller.js";
-import requestHandler from "../handlers/request.handler.js";
 
 const router = express.Router({ mergeParams: true });
 
@@ -14,14 +12,6 @@ router.get(
 // GET /search
 router.get(
   "/search",
-  query("query")
-    .trim()
-    .optional()
-    .isLength({ min: 1, max: 100 }).withMessage("query must be between 1-100 characters"),
-  query("page")
-    .optional()
-    .isInt({ min: 1, max: 1000 }).withMessage("page must be an integer between 1-1000"),
-  requestHandler.validate,
   mediaController.search
 );
 
@@ -31,13 +21,9 @@ router.get(
   mediaController.getDetail
 );
 
-// GET /:mediaCategory
+// GET /:mediaCategory - catch-all for lists
 router.get(
   "/:mediaCategory",
-  query("page")
-    .optional()
-    .isInt({ min: 1, max: 1000 }).withMessage("page must be an integer between 1-1000"),
-  requestHandler.validate,
   mediaController.getList
 );
 
