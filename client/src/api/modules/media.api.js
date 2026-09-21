@@ -1,40 +1,40 @@
 import privateClient from "../client/private.client";
 import publicClient from "../client/public.client";
 
-// TMDB API endpoints
-const mediaEndpoints = {
-  list: ({ mediaType, mediaCategory, page }) => `${mediaType}/${mediaCategory}?page=${page}`,
-  detail: ({ mediaType, mediaId }) => `moonflix/movie/detail/${mediaId}`,
-  search: ({ mediaType, query, page }) => `${mediaType}/search?query=${query}&page=${page}`
-};
-
 const mediaApi = {
-  getList: async ({ mediaType, mediaCategory, page }) => {
+  getList: async ({ mediaType, mediaCategory, page = 1 }) => {
     try {
       const response = await publicClient.get(
-        mediaEndpoints.list({ mediaType, mediaCategory, page })
+        `${mediaType}/${mediaCategory}`,
+        { params: { page } }
       );
-
       return { response };
-    } catch (err) { return { err }; }
+    } catch (err) { 
+      return { err }; 
+    }
   },
+
   getDetail: async ({ mediaType, mediaId }) => {
     try {
       const response = await privateClient.get(
-        mediaEndpoints.detail({ mediaType, mediaId })
+        `${mediaType}/${mediaId}`
       );
-
       return { response };
-    } catch (err) { return { err }; }
+    } catch (err) { 
+      return { err }; 
+    }
   },
-  search: async ({ mediaType, query, page }) => {
+
+  search: async ({ mediaType, query, page = 1 }) => {
     try {
       const response = await publicClient.get(
-        mediaEndpoints.search({ mediaType, query, page })
+        `search/${mediaType}`,
+        { params: { query, page } }
       );
-
       return { response };
-    } catch (err) { return { err }; }
+    } catch (err) { 
+      return { err }; 
+    }
   }
 };
 
