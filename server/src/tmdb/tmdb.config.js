@@ -1,5 +1,5 @@
-const baseUrl = process.env.TMDB_BASE_URL;
-const key = process.env.TMDB_KEY;
+const baseUrl = "https://api.themoviedb.org/3/";
+const token = process.env.TMDB_TOKEN;
 
 const getUrl = (endpoint, params) => {
   let qs = "";
@@ -13,8 +13,9 @@ const getUrl = (endpoint, params) => {
     qs = queryParams.toString();
   }
 
+  // Use the Bearer token authentication
   const separator = qs ? "&" : "?";
-  return `${baseUrl}${endpoint}?api_key=${key}${qs ? separator + qs : ""}`;
+  return `${baseUrl}${endpoint}${separator}${qs}`;
 };
 
-export default { getUrl };
+export default { getUrl, token };
