@@ -35,10 +35,8 @@ const MediaItem = ({ media, mediaType }) => {
   }, [media, mediaType]);
 
   const handleItemClick = (e) => {
-    if (!user) {
-      e.preventDefault();
-      dispatch(setAuthModalOpen(true));
-    }
+    // Allow users to navigate to media details without signin
+    // Auth modal will only show when they try to add to favorites
   };
 
   return (
