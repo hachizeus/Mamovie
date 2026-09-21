@@ -12,7 +12,24 @@ const publicClient = axios.create({
 });
 
 publicClient.interceptors.request.use(config => {
-  // Add header
+  // For GET requests, check if we have cached data
+  if ((config.method === 'get' || config.method === undefined)) {
+    const cacheKey = config.url + (config.params ? '?' + queryString.stringify(config.params) : '');
+    const cached = apiCache.get(cacheKey);
+    
+    if (cached) {
+      console.log(`[Cache HIT] ${cacheKey}`);
+      // Return a custom adapter that provides the cached data
+      config.adapter = () => Promise.resolve({ 
+        status: 200, 
+        data: cached, 
+        config,
+        statusText: 'OK',
+        headers: {}
+      });
+    }
+  }
+
   return {
     ...config,
     headers: {
