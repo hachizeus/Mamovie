@@ -118,23 +118,12 @@ const MediaDetail = () => {
     media ? (
       <>
         <ImageHeader imgPath={tmdbConfigs.backdropPath(media.backdrop_path || media.poster_path)} />
-        <Box sx={{
-          color: "primary.contrastText",
-          ...uiConfigs.style.mainContent
-        }}>
+        <Box className="media-detail-container" sx={{ color: "primary.contrastText", ...uiConfigs.style.mainContent }}>
           {/* media content */}
-          <Box sx={{
-            marginTop: { xs: "-10rem", md: "-15rem", lg: "-20rem" }
-          }}>
-            <Box sx={{
-              display: "flex",
-              flexDirection: { md: "row", xs: "column" }
-            }}>
+          <Box className="media-content-wrapper">
+            <Box className="media-content-flex">
               {/* poster */}
-              <Box sx={{
-                width: { xs: "70%", sm: "50%", md: "40%" },
-                margin: { xs: "0 auto 2rem", md: "0 2rem 0 0" }
-              }}>
+              <Box className="media-poster">
                 <Box sx={{
                   paddingTop: "140%",
                   ...uiConfigs.style.backgroundImage(tmdbConfigs.posterPath(media.poster_path || media.backdrop_path))
@@ -143,16 +132,12 @@ const MediaDetail = () => {
               {/* poster */}
 
               {/* media info */}
-              <Box sx={{
-                width: { xs: "100%", md: "60%" },
-                color: "text.primary"
-              }}>
+              <Box className="media-info">
                 <Stack spacing={5}>
                   {/* title */}
                   <Typography
                     variant="h4"
-                    fontSize={{ xs: "2rem", md: "2rem", lg: "4rem" }}
-                    fontWeight="700"
+                    className="media-title"
                     sx={{ ...uiConfigs.style.typoLines(2, "left") }}
                   >
                     {`${media.title || media.name} ${mediaType === tmdbConfigs.mediaType.movie ? media.release_date.split("-")[0] : media.first_air_date.split("-")[0]}`}
@@ -161,11 +146,8 @@ const MediaDetail = () => {
 
                   {/* rate and genres */}
                   <Stack direction="row" spacing={1} alignItems="center">
-                    {/* rate */}
                     <CircularRate value={media.vote_average} />
-                    {/* rate */}
                     <Divider orientation="vertical" />
-                    {/* genres */}
                     {genres.map((genre, index) => (
                       <Chip
                         label={genre.name}
@@ -174,7 +156,6 @@ const MediaDetail = () => {
                         key={index}
                       />
                     ))}
-                    {/* genres */}
                   </Stack>
                   {/* rate and genres */}
 
@@ -191,10 +172,7 @@ const MediaDetail = () => {
                   <Stack direction="row" spacing={1}>
                     <LoadingButton
                       variant="text"
-                      sx={{
-                        width: "max-content",
-                        "& .MuiButon-starIcon": { marginRight: "0" }
-                      }}
+                      sx={{ width: "max-content" }}
                       size="large"
                       startIcon={isFavorite ? <FavoriteIcon /> : <FavoriteBorderOutlinedIcon />}
                       loadingPosition="start"
@@ -249,8 +227,10 @@ const MediaDetail = () => {
           )}
           {/* media posters */}
 
-          {/* media reviews */}
-          <MediaReview reviews={media.reviews} media={media} mediaType={mediaType} />
+          {/* media reviews - lazy loaded */}
+          <Suspense fallback={<div style={{ padding: "2rem", textAlign: "center" }}>Loading reviews...</div>}>
+            <MediaReview reviews={media.reviews} media={media} mediaType={mediaType} />
+          </Suspense>
           {/* media reviews */}
 
           {/* media recommendation */}
