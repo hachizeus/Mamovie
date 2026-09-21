@@ -53,5 +53,5 @@ services:
         source: /*
         destination: /index.html
     envVars:
-      - key: REACT_APP_API_URL
+      - key: REACT_APP_API_BASE_URL
         value: https://mamovie-api.onrender.com/api/v1
