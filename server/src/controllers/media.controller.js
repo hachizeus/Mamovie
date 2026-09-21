@@ -46,6 +46,8 @@ const getList = async (req, res) => {
 
 const getGenres = async (req, res) => {
   try {
+    console.log(`[getGenres] Request: mediaType=${req.params.mediaType}`);
+    
     const { mediaType } = req.params;
 
     // Create cache key
@@ -55,18 +57,22 @@ const getGenres = async (req, res) => {
     let response = cacheService.get(cacheKey);
     
     if (!response) {
+      console.log(`[getGenres] Cache miss, fetching from TMDB`);
       response = await tmdbApi.mediaGenres({ mediaType });
       
       if (!response || !response.genres) {
+        console.error(`[getGenres] Invalid response from TMDB:`, response);
         return responseHandler.badRequest(res, "Failed to fetch genres from external API");
       }
       
       cacheService.set(cacheKey, response, 24 * 60 * 60 * 1000);
+    } else {
+      console.log(`[getGenres] Cache hit`);
     }
 
     return responseHandler.ok(res, response);
   } catch (error) {
-    console.error(`[getGenres Error] ${error.message}`);
+    console.error(`[getGenres Error] ${error.message}`, error.stack);
     responseHandler.error(res);
   }
 };
