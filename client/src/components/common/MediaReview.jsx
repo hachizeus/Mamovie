@@ -84,9 +84,17 @@ const MediaReview = ({ reviews, media, mediaType }) => {
   const skip = 4;
 
   useEffect(() => {
-    setListReviews([...reviews]);
-    setFilteredReviews([...reviews].splice(0, skip));
-    setReviewCount(reviews.length);
+    // Handle both array and {results: []} format from TMDB
+    let reviewsArray = [];
+    if (Array.isArray(reviews)) {
+      reviewsArray = reviews;
+    } else if (reviews && Array.isArray(reviews.results)) {
+      reviewsArray = reviews.results;
+    }
+    
+    setListReviews([...reviewsArray]);
+    setFilteredReviews([...reviewsArray].splice(0, skip));
+    setReviewCount(reviewsArray.length);
   }, [reviews]);
 
   const onAddReview = async () => {
