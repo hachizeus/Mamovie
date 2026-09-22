@@ -8,20 +8,42 @@ const MediaVideo = ({ video }) => {
   const iframeRef = useRef();
 
   useEffect(() => {
-    console.log("ifram");
-    const height = iframeRef.current.offsetWidth * 9 / 16 + "px";
-    iframeRef.current.setAttribute("height", height);
+    if (!iframeRef.current) return;
+    console.log("[MediaVideo] Video object:", video);
+    console.log("[MediaVideo] Video key:", video?.key);
+    console.log("[MediaVideo] YouTube URL:", tmdbConfigs.youtubePath(video?.key));
+    
+    try {
+      const height = iframeRef.current.offsetWidth * 9 / 16 + "px";
+      if (iframeRef.current) {
+        iframeRef.current.setAttribute("height", height);
+      }
+    } catch (e) {
+      console.error("[MediaVideo] Error setting height:", e);
+    }
   }, [video]);
+
+  if (!video?.key) {
+    return (
+      <Box sx={{ height: "max-content", color: "text.secondary", textAlign: "center", p: 2 }}>
+        Invalid video data (no key)
+      </Box>
+    );
+  }
+
+  const youtubeUrl = tmdbConfigs.youtubePath(video.key);
 
   return (
     <Box sx={{ height: "max-content" }}>
       <iframe
         key={video.key}
-        src={tmdbConfigs.youtubePath(video.key)}
+        src={youtubeUrl}
         ref={iframeRef}
         width="100%"
-        title={video.id}
-        style={{ border: 0 }}
+        title={video.name || video.id}
+        style={{ border: 0, display: "block" }}
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
       ></iframe>
     </Box>
   );
