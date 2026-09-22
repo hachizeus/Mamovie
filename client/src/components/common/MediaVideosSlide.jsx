@@ -53,11 +53,15 @@ const MediaVideo = ({ video }) => {
         height="360"
         title={video.name || video.id}
         style={{ border: 0, display: "block", minHeight: "360px", backgroundColor: "#222" }}
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        sandbox="allow-same-origin allow-scripts allow-presentation allow-popups"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
         allowFullScreen
         onError={() => {
           console.error("[MediaVideo] iframe error for video:", video.key);
           setHasError(true);
+        }}
+        onLoad={() => {
+          console.log("[MediaVideo] iframe loaded successfully for video:", video.key);
         }}
       ></iframe>
       {hasError && (
