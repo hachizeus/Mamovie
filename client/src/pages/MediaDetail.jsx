@@ -287,9 +287,9 @@ const MediaDetail = () => {
           </Container>
           {/* media recommendation */}
         </Box>
-      </>
-    );
-  }
+      </Box>
+    </>
+  );
 };
 
 export default MediaDetail;
