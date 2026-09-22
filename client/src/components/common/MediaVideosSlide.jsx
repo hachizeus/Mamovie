@@ -168,9 +168,22 @@ const MediaVideo = ({ video }) => {
 };
 
 const MediaVideosSlide = ({ videos }) => {
-  console.log("[MediaVideosSlide] All videos:", videos);
+  console.log("[MediaVideosSlide] ========== CONTAINER DEEP LOGGING START ==========");
+  console.log("[MediaVideosSlide] Videos prop received:", videos);
+  console.log("[MediaVideosSlide] Videos type:", typeof videos);
+  console.log("[MediaVideosSlide] Videos is array:", Array.isArray(videos));
+  console.log("[MediaVideosSlide] Videos length:", videos?.length);
+  
+  if (videos && Array.isArray(videos)) {
+    console.log("[MediaVideosSlide] First video object:", videos[0]);
+    console.log("[MediaVideosSlide] All videos details:");
+    videos.forEach((v, idx) => {
+      console.log(`[MediaVideosSlide]   [${idx}] key=${v?.key}, site=${v?.site}, type=${v?.type}, name=${v?.name}`);
+    });
+  }
   
   if (!videos || videos.length === 0) {
+    console.warn("[MediaVideosSlide] WARNING: No videos provided");
     return (
       <Box sx={{ padding: "2rem", textAlign: "center", color: "text.secondary" }}>
         No videos available
@@ -179,28 +192,43 @@ const MediaVideosSlide = ({ videos }) => {
   }
 
   // Filter to only YouTube videos
-  const youtubeVideos = videos.filter(v => {
-    console.log("[MediaVideosSlide] Checking video:", { site: v?.site, type: v?.type, key: v?.key });
-    return v?.site === "YouTube" && v?.key;
+  console.log("[MediaVideosSlide] Starting YouTube filter...");
+  const youtubeVideos = videos.filter((v, idx) => {
+    const isYoutube = v?.site === "YouTube";
+    const hasKey = !!v?.key;
+    const passes = isYoutube && hasKey;
+    console.log(`[MediaVideosSlide]   [Filter ${idx}] site="${v?.site}" hasKey=${hasKey} passes=${passes}`);
+    return passes;
   });
 
   console.log("[MediaVideosSlide] YouTube videos count:", youtubeVideos.length);
+  console.log("[MediaVideosSlide] YouTube videos:", youtubeVideos);
 
   if (youtubeVideos.length === 0) {
+    console.warn("[MediaVideosSlide] WARNING: No YouTube videos after filtering");
+    console.log("[MediaVideosSlide] All videos:", JSON.stringify(videos, null, 2));
     return (
-      <Box sx={{ padding: "2rem", textAlign: "center", color: "text.secondary" }}>
-        No YouTube videos available
+      <Box sx={{ padding: "2rem", textAlign: "center", color: "#ffaaaa", backgroundColor: "#330000", border: "2px solid #ff0000" }}>
+        <Typography sx={{ fontWeight: "bold" }}>❌ No YouTube videos available</Typography>
+        <Typography variant="caption">Total videos: {videos.length}</Typography>
+        <Typography variant="caption" sx={{ display: "block", mt: 1 }}>
+          Video types: {videos.map(v => v?.site).filter(Boolean).join(", ")}
+        </Typography>
       </Box>
     );
   }
 
+  console.log("[MediaVideosSlide] Rendering", youtubeVideos.length, "YouTube videos");
   return (
     <NavigationSwiper>
-      {youtubeVideos.map((video, index) => (
-        <SwiperSlide key={`${video.key}-${index}`}>
-          <MediaVideo video={video} />
-        </SwiperSlide>
-      ))}
+      {youtubeVideos.map((video, index) => {
+        console.log(`[MediaVideosSlide] Rendering video ${index}:`, video.key);
+        return (
+          <SwiperSlide key={`${video.key}-${index}`}>
+            <MediaVideo video={video} />
+          </SwiperSlide>
+        );
+      })}
     </NavigationSwiper>
   );
 };
