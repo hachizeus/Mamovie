@@ -217,8 +217,17 @@ const MediaDetail = () => {
               {(() => {
                 console.log("[MediaDetail] Passing videos to MediaVideosSlide:");
                 console.log("[MediaDetail]   - raw media.videos:", media.videos);
-                console.log("[MediaDetail]   - sliced (0-5):", media.videos?.slice(0, 5));
-                const videosToPass = media.videos?.slice(0, 5) || media.videos || [];
+                
+                // Handle both array and {results: []} format from TMDB
+                let videosArray = [];
+                if (Array.isArray(media.videos)) {
+                  videosArray = media.videos;
+                } else if (media.videos && Array.isArray(media.videos.results)) {
+                  videosArray = media.videos.results;
+                }
+                
+                const videosToPass = videosArray.slice(0, 5);
+                console.log("[MediaDetail]   - sliced (0-5):", videosToPass);
                 console.log("[MediaDetail]   - final videos to pass:", videosToPass);
                 return <MediaVideosSlide videos={videosToPass} />;
               })()}
