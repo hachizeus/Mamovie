@@ -132,9 +132,22 @@ const MediaDetail = () => {
     }
   };
 
+  if (!media) {
+    return (
+      <Box sx={{
+        color: "primary.contrastText",
+        ...uiConfigs.style.mainContent,
+        minHeight: "60vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
+      }}>
+        <Typography variant="h6">Loading movie details...</Typography>
+      </Box>
+    );
+  }
+
   return (
-    media ? (
-      <>
         <ImageHeader imgPath={tmdbConfigs.backdropPath(media.backdrop_path || media.poster_path)} />
         <Box className="media-detail-container" sx={{ color: "primary.contrastText", ...uiConfigs.style.mainContent }}>
           {/* media content */}
