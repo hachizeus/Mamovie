@@ -1,4 +1,4 @@
-import { Paper, Stack, Button, Box } from '@mui/material';
+import { Paper, Stack, Button, Box, Typography, Divider } from '@mui/material';
 import React from 'react';
 import Container from './Container';
 import Logo from './Logo';
@@ -29,6 +29,17 @@ const Footer = () => {
             ))}
           </Box>
         </Stack>
+        
+        <Divider sx={{ my: 2 }} />
+        
+        <Box sx={{ textAlign: "center", py: 2 }}>
+          <Typography variant="body2" sx={{ color: "text.secondary" }}>
+            Powered by <span style={{ color: "#16A366", fontWeight: "bold" }}>ElitJohns Digital Agency</span>
+          </Typography>
+          <Typography variant="caption" sx={{ color: "text.secondary", display: "block", mt: 1 }}>
+            © 2024 Mamovie. All rights reserved.
+          </Typography>
+        </Box>
       </Paper>
     </Container>
   );
