@@ -1,37 +1,12 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Button } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { SwiperSlide } from "swiper/react";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import tmdbConfigs from "../../api/configs/tmdb.configs";
 import NavigationSwiper from "./NavigationSwiper";
 
 const MediaVideo = ({ video }) => {
-  const iframeRef = useRef();
   const [hasError, setHasError] = useState(false);
-
-  useEffect(() => {
-    if (!iframeRef.current) return;
-    console.log("[MediaVideo] Video object:", video);
-    console.log("[MediaVideo] Video key:", video?.key);
-    console.log("[MediaVideo] Video name:", video?.name);
-    console.log("[MediaVideo] YouTube URL:", tmdbConfigs.youtubePath(video?.key));
-    
-    try {
-      const width = iframeRef.current.offsetWidth;
-      console.log("[MediaVideo] Iframe offsetWidth:", width);
-      
-      if (width > 0) {
-        const height = (width * 9 / 16) + "px";
-        iframeRef.current.setAttribute("height", height);
-        console.log("[MediaVideo] Set height:", height);
-      } else {
-        // If width is 0, use a sensible default
-        iframeRef.current.setAttribute("height", "360px");
-        console.warn("[MediaVideo] offsetWidth is 0, using default height");
-      }
-    } catch (e) {
-      console.error("[MediaVideo] Error setting height:", e);
-    }
-  }, [video]);
 
   if (!video?.key) {
     return (
@@ -41,59 +16,74 @@ const MediaVideo = ({ video }) => {
     );
   }
 
-  const youtubeUrl = tmdbConfigs.youtubePath(video.key);
   const youtubeWatchUrl = `https://www.youtube.com/watch?v=${video.key}`;
+  const youtubeEmbedUrl = `https://img.youtube.com/vi/${video.key}/maxresdefault.jpg`;
 
   return (
-    <Box sx={{ height: "max-content", width: "100%", position: "relative" }}>
+    <Box sx={{ 
+      height: "max-content", 
+      width: "100%", 
+      position: "relative",
+      backgroundColor: "#222",
+      borderRadius: "8px",
+      overflow: "hidden"
+    }}>
       <Box sx={{ 
         position: "relative", 
         width: "100%",
         paddingBottom: "56.25%", // 16:9 aspect ratio
-        overflow: "hidden",
-        backgroundColor: "#222"
+        backgroundColor: "#000",
+        cursor: "pointer",
+        backgroundImage: `url('${youtubeEmbedUrl}')`,
+        backgroundSize: "cover",
+        backgroundPosition: "center"
       }}>
-        <iframe
-          key={video.key}
-          src={youtubeUrl}
-          ref={iframeRef}
-          title={video.name || video.id}
-          style={{ 
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%", 
-            height: "100%",
-            border: 0,
-            display: "block"
-          }}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-          allowFullScreen
-          onError={() => {
-            console.error("[MediaVideo] iframe error for video:", video.key);
-            setHasError(true);
-          }}
-          onLoad={() => {
-            console.log("[MediaVideo] iframe loaded successfully for video:", video.key);
-          }}
-        ></iframe>
-      </Box>
-      {hasError && (
-        <Box sx={{ 
-          p: 2, 
-          backgroundColor: "#1a1a1a", 
-          color: "text.secondary", 
-          textAlign: "center",
-          border: "1px solid #333"
+        <Box sx={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "rgba(0, 0, 0, 0.3)",
+          opacity: 0.9,
+          transition: "opacity 0.3s ease",
+          "&:hover": {
+            opacity: 1
+          }
         }}>
-          <Typography variant="body2">
-            Video "{video.name}" is not available for embedding. {" "}
-            <a href={youtubeWatchUrl} target="_blank" rel="noopener noreferrer" style={{ color: "#16A366" }}>
-              Watch on YouTube
-            </a>
-          </Typography>
+          <Button
+            variant="contained"
+            color="error"
+            sx={{
+              borderRadius: "50%",
+              width: "80px",
+              height: "80px",
+              minWidth: "80px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "#16A366",
+              "&:hover": {
+                backgroundColor: "#0d7a4a"
+              }
+            }}
+            onClick={() => window.open(youtubeWatchUrl, '_blank')}
+          >
+            <PlayArrowIcon sx={{ fontSize: "40px" }} />
+          </Button>
         </Box>
-      )}
+      </Box>
+      <Box sx={{ p: 1.5, backgroundColor: "#1a1a1a" }}>
+        <Typography variant="body2" sx={{ color: "text.primary", fontWeight: 500 }}>
+          {video.name}
+        </Typography>
+        <Typography variant="caption" sx={{ color: "text.secondary" }}>
+          {video.type}
+        </Typography>
+      </Box>
     </Box>
   );
 };
