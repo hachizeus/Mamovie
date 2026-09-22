@@ -12,7 +12,7 @@ const backdropPath = (imgEndpoint) => `https://image.tmdb.org/t/p/original${imgE
 
 const posterPath = (imgEndpoint) => `https://image.tmdb.org/t/p/w500${imgEndpoint}`;
 
-const youtubePath = (videoId) => `https://www.youtube-nocookie.com/embed/${videoId}?controls=1&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3`;
+const youtubePath = (videoId) => `https://www.youtube.com/embed/${videoId}?controls=1&modestbranding=1&rel=0`;
 
 const tmdbConfigs = {
   mediaType,
