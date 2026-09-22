@@ -89,7 +89,7 @@ const MediaVideo = ({ video }) => {
         }}>
           <Typography variant="body2">
             Video "{video.name}" is not available for embedding. {" "}
-            <a href={youtubeWatchUrl} target="_blank" rel="noopener noreferrer" style={{ color: "#e50914" }}>
+            <a href={youtubeWatchUrl} target="_blank" rel="noopener noreferrer" style={{ color: "#1abc9c" }}>
               Watch on YouTube
             </a>
           </Typography>
