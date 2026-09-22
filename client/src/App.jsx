@@ -4,6 +4,7 @@ import themeConfigs from "./configs/theme.configs";
 import { ToastContainer } from "react-toastify";
 import CssBaseline from "@mui/material/CssBaseline";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import MainLayout from "./components/layout/MainLayout";
 import routes from "./routes/routes";
 import PageWrapper from "./components/common/PageWrapper";
@@ -16,42 +17,44 @@ const App = () => {
   const { themeMode } = useSelector((state) => state.themeMode);
 
   return (
-    <ThemeProvider theme={themeConfigs.custom({ mode: themeMode })}>
-      {/* config toastify */}
-      <ToastContainer
-        position="bottom-left"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        pauseOnFocusLoss
-        pauseOnHover
-        theme={themeMode}
-      />
-      {/* mui reset css */}
-      <CssBaseline />
+    <HelmetProvider>
+      <ThemeProvider theme={themeConfigs.custom({ mode: themeMode })}>
+        {/* config toastify */}
+        <ToastContainer
+          position="bottom-left"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          pauseOnFocusLoss
+          pauseOnHover
+          theme={themeMode}
+        />
+        {/* mui reset css */}
+        <CssBaseline />
 
-      {/* app routes */}
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<MainLayout />}>
-            {routes.map((route, index) => (
-              <Route
-                key={index}
-                path={route.path}
-                index={route.index}
-                element={
-                  <PageWrapper state={route.state}>
-                    {route.element}
-                  </PageWrapper>
-                }
-              />
-            ))}
-          </Route>
-        </Routes>
-      </BrowserRouter>
-      {/* app routes */}
-    </ThemeProvider>
+        {/* app routes */}
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<MainLayout />}>
+              {routes.map((route, index) => (
+                <Route
+                  key={index}
+                  path={route.path}
+                  index={route.index}
+                  element={
+                    <PageWrapper state={route.state}>
+                      {route.element}
+                    </PageWrapper>
+                  }
+                />
+              ))}
+            </Route>
+          </Routes>
+        </BrowserRouter>
+        {/* app routes */}
+      </ThemeProvider>
+    </HelmetProvider>
   );
 };
 

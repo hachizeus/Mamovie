@@ -9,6 +9,8 @@ import personApi from "../api/modules/person.api";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { setGlobalLoading } from "../redux/features/globalLoadingSlice";
+import SEOHelmet, { generateSEOData } from "../utils/seoHelmet";
+import { StructuredData, generatePersonSchema } from "../utils/structuredData";
 
 const PersonDetail = () => {
   const { personId } = useParams();
@@ -28,8 +30,21 @@ const PersonDetail = () => {
     getPerson();
   }, [personId]);
 
+  if (!person) {
+    return (
+      <Box sx={{ ...uiConfigs.style.mainContent, minHeight: "60vh" }}>
+        <Typography>Loading person details...</Typography>
+      </Box>
+    );
+  }
+
+  const seoData = generateSEOData('personDetail', person);
+  const structuredData = generatePersonSchema(person);
+
   return (
     <>
+      <SEOHelmet {...seoData} />
+      {structuredData && <StructuredData data={structuredData} />}
       <Toolbar />
       {person && (
         <>

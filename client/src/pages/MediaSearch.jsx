@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import mediaApi from "../api/modules/media.api";
 import MediaGrid from "../components/common/MediaGrid";
 import uiConfigs from "../configs/ui.configs";
+import SEOHelmet, { generateSEOData } from "../utils/seoHelmet";
 
 const mediaTypes = ["movie", "tv", "people"];
 let timer;
@@ -61,8 +62,11 @@ const MediaSearch = () => {
     }, timeout);
   };
 
+  const seoData = generateSEOData('search');
+
   return (
     <>
+      <SEOHelmet {...seoData} />
       <Toolbar />
       <Box sx={{ ...uiConfigs.style.mainContent }}>
         <Stack spacing={2}>

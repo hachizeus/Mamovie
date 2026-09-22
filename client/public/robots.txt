@@ -1,3 +1,43 @@
-# https://www.robotstxt.org/robotstxt.html
+# Mamovie Robots.txt
+# Allow search engines to crawl and index the site
+
+# Default rules for all bots
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /*.json$
+Disallow: /*.xml$
+Disallow: /*?*
+Disallow: /*&
+Disallow: /*%
+Disallow: /search?
+Disallow: /private/
+Disallow: /node_modules/
+Disallow: /build/
+
+# Allow specific bots
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 1
+
+User-agent: DuckDuckBot
+Allow: /
+Crawl-delay: 1
+
+# Sitemap reference
+Sitemap: https://mamovie.com/sitemap.xml
+
+# Specify the crawl delay for all bots (in seconds)
+Crawl-delay: 1
+
+# Request-rate for all bots (requests per second)
+Request-rate: 30/60

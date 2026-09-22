@@ -12,6 +12,7 @@ import { setAppState } from "../redux/features/appStateSlice";
 import { setGlobalLoading } from "../redux/features/globalLoadingSlice";
 import { toast } from "react-toastify";
 import usePrevious from "../hooks/usePrevious";
+import SEOHelmet, { generateSEOData } from "../utils/seoHelmet";
 
 const MediaList = () => {
   const { mediaType } = useParams();
@@ -77,8 +78,13 @@ const MediaList = () => {
 
   const onLoadMore = () => setCurrPage(currPage + 1);
 
+  const seoData = generateSEOData(
+    mediaType === tmdbConfigs.mediaType.movie ? 'movieList' : 'tvList'
+  );
+
   return (
     <>
+      <SEOHelmet {...seoData} />
       <HeroSlide mediaType={mediaType} mediaCategory={mediaCategories[currCategory]} />
       <Box sx={{ ...uiConfigs.style.mainContent }}>
         <Stack

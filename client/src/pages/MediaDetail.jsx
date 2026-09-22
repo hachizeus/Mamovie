@@ -25,6 +25,9 @@ import { addFavorite, removeFavorite } from "../redux/features/userSlice";
 
 import CastSlide from "../components/common/CastSlide";
 import MediaVideosSlide from "../components/common/MediaVideosSlide";
+import SEOHelmet, { generateSEOData } from "../utils/seoHelmet";
+import { StructuredData, generateMovieSchema, generateTVShowSchema } from "../utils/structuredData";
+
 // Lazy load non-critical components below the fold
 const BackdropSlide = lazy(() => import("../components/common/BackdropSlide"));
 const PosterSlide = lazy(() => import("../components/common/PosterSlide"));
@@ -121,8 +124,21 @@ const MediaDetail = () => {
     );
   }
 
+  // Generate SEO data based on media type
+  const seoData = generateSEOData(
+    mediaType === tmdbConfigs.mediaType.movie ? 'movieDetail' : 'tvDetail',
+    media
+  );
+
+  // Generate structured data
+  const structuredData = mediaType === tmdbConfigs.mediaType.movie 
+    ? generateMovieSchema(media) 
+    : generateTVShowSchema(media);
+
   return (
     <>
+      <SEOHelmet {...seoData} />
+      {structuredData && <StructuredData data={structuredData} />}
       <ImageHeader imgPath={tmdbConfigs.backdropPath(media.backdrop_path || media.poster_path)} />
       <Box className="media-detail-container" sx={{ color: "primary.contrastText", ...uiConfigs.style.mainContent }}>
           {/* media content */}
