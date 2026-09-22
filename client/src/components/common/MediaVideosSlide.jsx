@@ -14,9 +14,17 @@ const MediaVideo = ({ video }) => {
     console.log("[MediaVideo] YouTube URL:", tmdbConfigs.youtubePath(video?.key));
     
     try {
-      const height = iframeRef.current.offsetWidth * 9 / 16 + "px";
-      if (iframeRef.current) {
+      const width = iframeRef.current.offsetWidth;
+      console.log("[MediaVideo] Iframe offsetWidth:", width);
+      
+      if (width > 0) {
+        const height = (width * 9 / 16) + "px";
         iframeRef.current.setAttribute("height", height);
+        console.log("[MediaVideo] Set height:", height);
+      } else {
+        // If width is 0, use a sensible default and try again on next render
+        iframeRef.current.setAttribute("height", "360px");
+        console.warn("[MediaVideo] offsetWidth is 0, using default height");
       }
     } catch (e) {
       console.error("[MediaVideo] Error setting height:", e);
@@ -34,14 +42,15 @@ const MediaVideo = ({ video }) => {
   const youtubeUrl = tmdbConfigs.youtubePath(video.key);
 
   return (
-    <Box sx={{ height: "max-content" }}>
+    <Box sx={{ height: "max-content", width: "100%" }}>
       <iframe
         key={video.key}
         src={youtubeUrl}
         ref={iframeRef}
         width="100%"
+        height="360"
         title={video.name || video.id}
-        style={{ border: 0, display: "block" }}
+        style={{ border: 0, display: "block", minHeight: "360px" }}
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen
       ></iframe>
