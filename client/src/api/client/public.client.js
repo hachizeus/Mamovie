@@ -3,16 +3,18 @@ import queryString from "query-string";
 import apiCache from "../utils/cache";
 
 const publicClient = axios.create({
-  baseURL: "https://api.themoviedb.org/3",
-  paramsSerializer: {
-    encode: params => queryString.stringify(params)
-  }
+  baseURL: "https://api.themoviedb.org/3"
 });
 
 publicClient.interceptors.request.use(config => {
-  // Add TMDB API key to all requests
-  config.params = config.params || {};
+  // Add TMDB API key to all requests properly
+  if (!config.params) {
+    config.params = {};
+  }
   config.params.api_key = process.env.REACT_APP_TMDB_API_KEY;
+
+  console.log("[publicClient] Request to:", config.url);
+  console.log("[publicClient] API Key present:", !!config.params.api_key);
 
   // For GET requests, check if we have cached data
   if ((config.method === 'get' || config.method === undefined)) {
@@ -32,12 +34,7 @@ publicClient.interceptors.request.use(config => {
     }
   }
 
-  return {
-    ...config,
-    headers: {
-      "Content-Type": "application/json"
-    }
-  };
+  return config;
 });
 
 publicClient.interceptors.response.use((response) => {
@@ -59,13 +56,16 @@ publicClient.interceptors.response.use((response) => {
     console.log(`[Cache SET] ${cacheKey} (TTL: ${ttl / 1000 / 60}m)`);
   }
 
-  // Return the data directly (unwrap from axios response envelope)
+  // Return the data directly
   if (response && response.data) {
     return response.data;
   }
   return response;
 }, (err) => {
-  // For errors, return the error response data if available
+  console.error("[publicClient] Error:", err.response?.status, err.response?.statusText);
+  console.error("[publicClient] Full error:", err);
+  
+  // For errors, throw with details
   if (err.response && err.response.data) {
     throw err.response.data;
   }
