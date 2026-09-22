@@ -214,7 +214,14 @@ const MediaDetail = () => {
           {/* media videos */}
           <div ref={videoRef} style={{ paddingTop: "2rem" }}>
             <Container header="Videos">
-              <MediaVideosSlide videos={media.videos?.slice(0, 5) || media.videos || []} />
+              {(() => {
+                console.log("[MediaDetail] Passing videos to MediaVideosSlide:");
+                console.log("[MediaDetail]   - raw media.videos:", media.videos);
+                console.log("[MediaDetail]   - sliced (0-5):", media.videos?.slice(0, 5));
+                const videosToPass = media.videos?.slice(0, 5) || media.videos || [];
+                console.log("[MediaDetail]   - final videos to pass:", videosToPass);
+                return <MediaVideosSlide videos={videosToPass} />;
+              })()}
             </Container>
           </div>
           {/* media videos */}
