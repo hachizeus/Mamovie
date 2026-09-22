@@ -99,7 +99,14 @@ const Topbar = () => {
             <Stack spacing={3} direction="row" alignItems="center">
               {!user && <Button
                 variant="contained"
-                onClick={() => dispatch(setAuthModalOpen(true))}
+                disabled
+                sx={{
+                  opacity: 0.5,
+                  cursor: "not-allowed",
+                  backgroundColor: "rgba(255, 255, 255, 0.3) !important",
+                  color: "rgba(255, 255, 255, 0.5) !important"
+                }}
+                title="Sign in functionality is disabled"
               >
                 sign in
               </Button>}
