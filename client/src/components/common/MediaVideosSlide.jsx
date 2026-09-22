@@ -28,7 +28,16 @@ const MediaVideo = ({ video }) => {
 };
 
 const MediaVideosSlide = ({ videos }) => {
-  console.log({ videos });
+  console.log("[MediaVideosSlide]", videos);
+  
+  if (!videos || videos.length === 0) {
+    return (
+      <Box sx={{ padding: "2rem", textAlign: "center", color: "text.secondary" }}>
+        No videos available
+      </Box>
+    );
+  }
+
   return (
     <NavigationSwiper>
       {videos.map((video, index) => (
