@@ -2,16 +2,18 @@ import axios from "axios";
 import queryString from "query-string";
 import apiCache from "../utils/cache";
 
-const baseURL = process.env.REACT_APP_API_BASE_URL;
-
 const publicClient = axios.create({
-  baseURL,
+  baseURL: "https://api.themoviedb.org/3",
   paramsSerializer: {
     encode: params => queryString.stringify(params)
   }
 });
 
 publicClient.interceptors.request.use(config => {
+  // Add TMDB API key to all requests
+  config.params = config.params || {};
+  config.params.api_key = process.env.REACT_APP_TMDB_API_KEY;
+
   // For GET requests, check if we have cached data
   if ((config.method === 'get' || config.method === undefined)) {
     const cacheKey = config.url + (config.params ? '?' + queryString.stringify(config.params) : '');
