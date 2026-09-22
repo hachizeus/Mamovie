@@ -1,13 +1,15 @@
-import { Box, Typography, Button } from "@mui/material";
+import { Box, Typography, Button, Modal } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { SwiperSlide } from "swiper/react";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import CloseIcon from "@mui/icons-material/Close";
 import tmdbConfigs from "../../api/configs/tmdb.configs";
 import NavigationSwiper from "./NavigationSwiper";
 
 const MediaVideo = ({ video }) => {
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     console.log("[MediaVideo] ========== DEEP LOGGING START ==========");
@@ -37,10 +39,12 @@ const MediaVideo = ({ video }) => {
 
   const youtubeWatchUrl = `https://www.youtube.com/watch?v=${video.key}`;
   const youtubeEmbedUrl = `https://img.youtube.com/vi/${video.key}/maxresdefault.jpg`;
+  const youtubeIframeUrl = `https://www.youtube.com/embed/${video.key}?autoplay=1&controls=1&modestbranding=1&rel=0&enablejsapi=1`;
 
   console.log("[MediaVideo] YouTube URLs built:");
   console.log("[MediaVideo]   - Watch URL:", youtubeWatchUrl);
   console.log("[MediaVideo]   - Embed URL:", youtubeEmbedUrl);
+  console.log("[MediaVideo]   - Iframe URL:", youtubeIframeUrl);
 
   const handleImageLoad = (e) => {
     console.log("[MediaVideo] Image loaded successfully for video:", video.key);
@@ -63,14 +67,8 @@ const MediaVideo = ({ video }) => {
   const handlePlayClick = (e) => {
     try {
       console.log("[MediaVideo] Play button clicked for video:", video.key);
-      console.log("[MediaVideo] Opening URL:", youtubeWatchUrl);
-      const newWindow = window.open(youtubeWatchUrl, '_blank');
-      if (!newWindow) {
-        console.error("[MediaVideo] Failed to open window - popup may be blocked");
-        setErrorMessage("Popup blocked - please allow popups");
-      } else {
-        console.log("[MediaVideo] Window opened successfully");
-      }
+      console.log("[MediaVideo] Opening modal with video:", video.name);
+      setModalOpen(true);
     } catch (err) {
       console.error("[MediaVideo] EXCEPTION in handlePlayClick:", err);
       console.error("[MediaVideo] Exception details:", {
@@ -83,87 +81,182 @@ const MediaVideo = ({ video }) => {
     }
   };
 
+  const handleCloseModal = () => {
+    console.log("[MediaVideo] Closing modal for video:", video.key);
+    setModalOpen(false);
+  };
+
   return (
-    <Box sx={{ 
-      height: "max-content", 
-      width: "100%", 
-      position: "relative",
-      backgroundColor: "#222",
-      borderRadius: "8px",
-      overflow: "hidden"
-    }}>
+    <>
       <Box sx={{ 
-        position: "relative", 
-        width: "100%",
-        paddingBottom: "56.25%", // 16:9 aspect ratio
-        backgroundColor: "#000",
-        cursor: "pointer",
-        backgroundImage: `url('${youtubeEmbedUrl}')`,
-        backgroundSize: "cover",
-        backgroundPosition: "center"
-      }}
-      onError={handleImageError}
-      onLoad={handleImageLoad}
-      >
-        <Box sx={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
+        height: "max-content", 
+        width: "100%", 
+        position: "relative",
+        backgroundColor: "#222",
+        borderRadius: "8px",
+        overflow: "hidden"
+      }}>
+        <Box sx={{ 
+          position: "relative", 
+          width: "100%",
+          paddingBottom: "56.25%", // 16:9 aspect ratio
+          backgroundColor: "#000",
+          cursor: "pointer",
+          backgroundImage: `url('${youtubeEmbedUrl}')`,
+          backgroundSize: "cover",
+          backgroundPosition: "center"
+        }}
+        onError={handleImageError}
+        onLoad={handleImageLoad}
+        >
+          <Box sx={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "rgba(0, 0, 0, 0.3)",
+            opacity: 0.9,
+            transition: "opacity 0.3s ease",
+            "&:hover": {
+              opacity: 1
+            }
+          }}>
+            <Button
+              variant="contained"
+              color="error"
+              sx={{
+                borderRadius: "50%",
+                width: "80px",
+                height: "80px",
+                minWidth: "80px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: "#16A366",
+                "&:hover": {
+                  backgroundColor: "#0d7a4a"
+                }
+              }}
+              onClick={handlePlayClick}
+              title={`Watch: ${video.name}`}
+            >
+              <PlayArrowIcon sx={{ fontSize: "40px" }} />
+            </Button>
+          </Box>
+        </Box>
+        <Box sx={{ p: 1.5, backgroundColor: "#1a1a1a" }}>
+          <Typography variant="body2" sx={{ color: "text.primary", fontWeight: 500 }}>
+            {video.name}
+          </Typography>
+          <Typography variant="caption" sx={{ color: "text.secondary" }}>
+            {video.type} • {video.site || 'Unknown source'}
+          </Typography>
+        </Box>
+        {hasError && (
+          <Box sx={{ 
+            p: 2, 
+            backgroundColor: "#330000", 
+            color: "#ffaaaa", 
+            textAlign: "center",
+            border: "2px solid #ff0000"
+          }}>
+            <Typography variant="body2">❌ Error: {errorMessage}</Typography>
+          </Box>
+        )}
+      </Box>
+
+      {/* Video Modal */}
+      <Modal
+        open={modalOpen}
+        onClose={handleCloseModal}
+        sx={{
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "rgba(0, 0, 0, 0.3)",
-          opacity: 0.9,
-          transition: "opacity 0.3s ease",
-          "&:hover": {
-            opacity: 1
-          }
+          zIndex: 1300
+        }}
+      >
+        <Box sx={{
+          position: "relative",
+          width: "90%",
+          maxWidth: "1200px",
+          backgroundColor: "#000",
+          borderRadius: "12px",
+          overflow: "hidden",
+          boxShadow: "0 0 50px rgba(0, 0, 0, 0.9)"
         }}>
+          {/* Close Button */}
           <Button
-            variant="contained"
-            color="error"
+            onClick={handleCloseModal}
             sx={{
+              position: "absolute",
+              top: 10,
+              right: 10,
+              zIndex: 10,
+              backgroundColor: "#16A366",
+              color: "#fff",
               borderRadius: "50%",
-              width: "80px",
-              height: "80px",
-              minWidth: "80px",
+              width: "40px",
+              height: "40px",
+              minWidth: "40px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              backgroundColor: "#16A366",
               "&:hover": {
                 backgroundColor: "#0d7a4a"
               }
             }}
-            onClick={handlePlayClick}
-            title={`Watch: ${video.name}`}
+            title="Close"
           >
-            <PlayArrowIcon sx={{ fontSize: "40px" }} />
+            <CloseIcon />
           </Button>
+
+          {/* Video Title */}
+          <Box sx={{ p: 2, backgroundColor: "#1a1a1a", borderBottom: "1px solid #333" }}>
+            <Typography variant="h6" sx={{ color: "#fff", fontWeight: "bold" }}>
+              {video.name}
+            </Typography>
+            <Typography variant="caption" sx={{ color: "#999" }}>
+              {video.type} • {video.site}
+            </Typography>
+          </Box>
+
+          {/* YouTube Iframe */}
+          <Box sx={{
+            position: "relative",
+            width: "100%",
+            paddingBottom: "56.25%",
+            backgroundColor: "#000"
+          }}>
+            <iframe
+              key={video.key}
+              src={youtubeIframeUrl}
+              title={video.name || video.id}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                border: "none",
+                display: "block"
+              }}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+              allowFullScreen
+              onLoad={() => console.log("[MediaVideo] Modal iframe loaded for video:", video.key)}
+              onError={(e) => {
+                console.error("[MediaVideo] Modal iframe error:", e);
+                console.error("[MediaVideo] Error for video:", video.key);
+              }}
+            />
+          </Box>
         </Box>
-      </Box>
-      <Box sx={{ p: 1.5, backgroundColor: "#1a1a1a" }}>
-        <Typography variant="body2" sx={{ color: "text.primary", fontWeight: 500 }}>
-          {video.name}
-        </Typography>
-        <Typography variant="caption" sx={{ color: "text.secondary" }}>
-          {video.type} • {video.site || 'Unknown source'}
-        </Typography>
-      </Box>
-      {hasError && (
-        <Box sx={{ 
-          p: 2, 
-          backgroundColor: "#330000", 
-          color: "#ffaaaa", 
-          textAlign: "center",
-          border: "2px solid #ff0000"
-        }}>
-          <Typography variant="body2">❌ Error: {errorMessage}</Typography>
-        </Box>
-      )}
-    </Box>
+      </Modal>
+    </>
   );
 };
 
