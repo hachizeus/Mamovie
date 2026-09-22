@@ -148,8 +148,9 @@ const MediaDetail = () => {
   }
 
   return (
-        <ImageHeader imgPath={tmdbConfigs.backdropPath(media.backdrop_path || media.poster_path)} />
-        <Box className="media-detail-container" sx={{ color: "primary.contrastText", ...uiConfigs.style.mainContent }}>
+    <>
+      <ImageHeader imgPath={tmdbConfigs.backdropPath(media.backdrop_path || media.poster_path)} />
+      <Box className="media-detail-container" sx={{ color: "primary.contrastText", ...uiConfigs.style.mainContent }}>
           {/* media content */}
           <Box className="media-content-wrapper">
             <Box className="media-content-flex">
