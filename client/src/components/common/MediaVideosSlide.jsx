@@ -12,6 +12,7 @@ const MediaVideo = ({ video }) => {
     if (!iframeRef.current) return;
     console.log("[MediaVideo] Video object:", video);
     console.log("[MediaVideo] Video key:", video?.key);
+    console.log("[MediaVideo] Video name:", video?.name);
     console.log("[MediaVideo] YouTube URL:", tmdbConfigs.youtubePath(video?.key));
     
     try {
@@ -23,7 +24,7 @@ const MediaVideo = ({ video }) => {
         iframeRef.current.setAttribute("height", height);
         console.log("[MediaVideo] Set height:", height);
       } else {
-        // If width is 0, use a sensible default and try again on next render
+        // If width is 0, use a sensible default
         iframeRef.current.setAttribute("height", "360px");
         console.warn("[MediaVideo] offsetWidth is 0, using default height");
       }
@@ -44,26 +45,40 @@ const MediaVideo = ({ video }) => {
   const youtubeWatchUrl = `https://www.youtube.com/watch?v=${video.key}`;
 
   return (
-    <Box sx={{ height: "max-content", width: "100%" }}>
-      <iframe
-        key={video.key}
-        src={youtubeUrl}
-        ref={iframeRef}
-        width="100%"
-        height="360"
-        title={video.name || video.id}
-        style={{ border: 0, display: "block", minHeight: "360px", backgroundColor: "#222" }}
-        sandbox="allow-same-origin allow-scripts allow-presentation allow-popups"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-        allowFullScreen
-        onError={() => {
-          console.error("[MediaVideo] iframe error for video:", video.key);
-          setHasError(true);
-        }}
-        onLoad={() => {
-          console.log("[MediaVideo] iframe loaded successfully for video:", video.key);
-        }}
-      ></iframe>
+    <Box sx={{ height: "max-content", width: "100%", position: "relative" }}>
+      <Box sx={{ 
+        position: "relative", 
+        width: "100%",
+        paddingBottom: "56.25%", // 16:9 aspect ratio
+        overflow: "hidden",
+        backgroundColor: "#222"
+      }}>
+        <iframe
+          key={video.key}
+          src={youtubeUrl}
+          ref={iframeRef}
+          title={video.name || video.id}
+          style={{ 
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%", 
+            height: "100%",
+            border: 0,
+            display: "block"
+          }}
+          sandbox="allow-same-origin allow-scripts allow-presentation allow-popups"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+          allowFullScreen
+          onError={() => {
+            console.error("[MediaVideo] iframe error for video:", video.key);
+            setHasError(true);
+          }}
+          onLoad={() => {
+            console.log("[MediaVideo] iframe loaded successfully for video:", video.key);
+          }}
+        ></iframe>
+      </Box>
       {hasError && (
         <Box sx={{ 
           p: 2, 
@@ -73,7 +88,7 @@ const MediaVideo = ({ video }) => {
           border: "1px solid #333"
         }}>
           <Typography variant="body2">
-            Video not available. {" "}
+            Video "{video.name}" is not available for embedding. {" "}
             <a href={youtubeWatchUrl} target="_blank" rel="noopener noreferrer" style={{ color: "#e50914" }}>
               Watch on YouTube
             </a>
