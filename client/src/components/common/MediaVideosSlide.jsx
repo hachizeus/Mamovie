@@ -50,7 +50,7 @@ const MediaVideo = ({ video }) => {
 };
 
 const MediaVideosSlide = ({ videos }) => {
-  console.log("[MediaVideosSlide]", videos);
+  console.log("[MediaVideosSlide] All videos:", videos);
   
   if (!videos || videos.length === 0) {
     return (
@@ -60,10 +60,26 @@ const MediaVideosSlide = ({ videos }) => {
     );
   }
 
+  // Filter to only YouTube videos
+  const youtubeVideos = videos.filter(v => {
+    console.log("[MediaVideosSlide] Checking video:", { site: v?.site, type: v?.type, key: v?.key });
+    return v?.site === "YouTube" && v?.key;
+  });
+
+  console.log("[MediaVideosSlide] YouTube videos count:", youtubeVideos.length);
+
+  if (youtubeVideos.length === 0) {
+    return (
+      <Box sx={{ padding: "2rem", textAlign: "center", color: "text.secondary" }}>
+        No YouTube videos available
+      </Box>
+    );
+  }
+
   return (
     <NavigationSwiper>
-      {videos.map((video, index) => (
-        <SwiperSlide key={index}>
+      {youtubeVideos.map((video, index) => (
+        <SwiperSlide key={`${video.key}-${index}`}>
           <MediaVideo video={video} />
         </SwiperSlide>
       ))}
