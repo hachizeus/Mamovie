@@ -49,26 +49,34 @@ const MediaDetail = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
     const getMedia = async () => {
-      // Only show loading for new requests, not cached ones
-      dispatch(setGlobalLoading(true));
-      const { response, err } = await mediaApi.getDetail({ mediaType, mediaId });
-      dispatch(setGlobalLoading(false));
-
-      if (response) {
-        // Use callback form to prevent stale closure issues
-        setMedia(prevMedia => {
-          // Only update if it's a different movie
-          if (prevMedia?.id !== response.id) {
-            return response;
-          }
-          return prevMedia;
-        });
+      try {
+        console.log(`[MediaDetail] Loading ${mediaType}/${mediaId}`);
+        dispatch(setGlobalLoading(true));
         
-        setIsFavorite(response.isFavorite);
-        setGenres(response.genres.splice(0, 2));
-      }
+        const { response, err } = await mediaApi.getDetail({ mediaType, mediaId });
+        dispatch(setGlobalLoading(false));
 
-      if (err) toast.error(err.message);
+        console.log(`[MediaDetail] Response:`, response);
+        console.log(`[MediaDetail] Error:`, err);
+
+        if (response) {
+          console.log(`[MediaDetail] Setting media to:`, response.id, response.title || response.name);
+          setMedia(response);
+          setIsFavorite(response.isFavorite);
+          const genreList = response.genres ? response.genres.splice(0, 2) : [];
+          setGenres(genreList);
+          console.log(`[MediaDetail] Media set successfully`);
+        }
+
+        if (err) {
+          console.error(`[MediaDetail] API Error:`, err);
+          toast.error(err.message || "Failed to load media");
+        }
+      } catch (error) {
+        console.error(`[MediaDetail] Exception:`, error);
+        dispatch(setGlobalLoading(false));
+        toast.error("Failed to load media details");
+      }
     };
 
     getMedia();
