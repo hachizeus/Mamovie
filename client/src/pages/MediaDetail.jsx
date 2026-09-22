@@ -158,7 +158,7 @@ const MediaDetail = () => {
                     className="media-title"
                     sx={{ ...uiConfigs.style.typoLines(2, "left") }}
                   >
-                    {`${media.title || media.name} ${mediaType === tmdbConfigs.mediaType.movie ? media.release_date.split("-")[0] : media.first_air_date.split("-")[0]}`}
+                    {`${media.title || media.name} ${mediaType === tmdbConfigs.mediaType.movie ? media.release_date?.split("-")[0] || "" : media.first_air_date?.split("-")[0] || ""}`}
                   </Typography>
                   {/* title */}
 
@@ -202,7 +202,7 @@ const MediaDetail = () => {
                       sx={{ width: "max-content" }}
                       size="large"
                       startIcon={<PlayArrowIcon />}
-                      onClick={() => videoRef.current.scrollIntoView()}
+                      onClick={() => videoRef.current?.scrollIntoView()}
                     >
                       watch now
                     </Button>
@@ -211,7 +211,7 @@ const MediaDetail = () => {
 
                   {/* cast */}
                   <Container header="Cast">
-                    <CastSlide casts={media.credits.cast} />
+                    <CastSlide casts={media.credits?.cast || []} />
                   </Container>
                   {/* cast */}
                 </Stack>
@@ -224,13 +224,13 @@ const MediaDetail = () => {
           {/* media videos */}
           <div ref={videoRef} style={{ paddingTop: "2rem" }}>
             <Container header="Videos">
-              <MediaVideosSlide videos={[...media.videos.results].splice(0, 5)} />
+              <MediaVideosSlide videos={media.videos?.results?.slice(0, 5) || []} />
             </Container>
           </div>
           {/* media videos */}
 
           {/* media backdrop */}
-          {media.images.backdrops.length > 0 && (
+          {media.images?.backdrops?.length > 0 && (
             <Suspense fallback={<div style={{ padding: "2rem", textAlign: "center" }}>Loading backdrops...</div>}>
               <Container header="backdrops">
                 <BackdropSlide backdrops={media.images.backdrops} />
@@ -240,7 +240,7 @@ const MediaDetail = () => {
           {/* media backdrop */}
 
           {/* media posters */}
-          {media.images.posters.length > 0 && (
+          {media.images?.posters?.length > 0 && (
             <Suspense fallback={<div style={{ padding: "2rem", textAlign: "center" }}>Loading posters...</div>}>
               <Container header="posters">
                 <PosterSlide posters={media.images.posters} />
@@ -251,18 +251,18 @@ const MediaDetail = () => {
 
           {/* media reviews - lazy loaded */}
           <Suspense fallback={<div style={{ padding: "2rem", textAlign: "center" }}>Loading reviews...</div>}>
-            <MediaReview reviews={media.reviews} media={media} mediaType={mediaType} />
+            <MediaReview reviews={media.reviews || []} media={media} mediaType={mediaType} />
           </Suspense>
           {/* media reviews */}
 
           {/* media recommendation */}
           <Container header="you may also like">
-            {media.recommend.length > 0 && (
+            {media.recommend?.length > 0 && (
               <Suspense fallback={<div style={{ padding: "2rem", textAlign: "center" }}>Loading recommendations...</div>}>
                 <RecommendSlide medias={media.recommend} mediaType={mediaType} />
               </Suspense>
             )}
-            {media.recommend.length === 0 && (
+            {(!media.recommend || media.recommend.length === 0) && (
               <Suspense fallback={<div style={{ padding: "2rem", textAlign: "center" }}>Loading recommendations...</div>}>
                 <MediaSlide
                   mediaType={mediaType}
@@ -274,7 +274,11 @@ const MediaDetail = () => {
           {/* media recommendation */}
         </Box>
       </>
-    ) : null
+    ) : (
+      <Box sx={{ color: "primary.contrastText", ...uiConfigs.style.mainContent, padding: "4rem 0", textAlign: "center" }}>
+        <Typography variant="h6">Loading media details...</Typography>
+      </Box>
+    )
   );
 };
 
