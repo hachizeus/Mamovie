@@ -6,6 +6,7 @@ import NavigationSwiper from "./NavigationSwiper";
 
 const MediaVideo = ({ video }) => {
   const iframeRef = useRef();
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     if (!iframeRef.current) return;
@@ -40,6 +41,7 @@ const MediaVideo = ({ video }) => {
   }
 
   const youtubeUrl = tmdbConfigs.youtubePath(video.key);
+  const youtubeWatchUrl = `https://www.youtube.com/watch?v=${video.key}`;
 
   return (
     <Box sx={{ height: "max-content", width: "100%" }}>
@@ -50,10 +52,30 @@ const MediaVideo = ({ video }) => {
         width="100%"
         height="360"
         title={video.name || video.id}
-        style={{ border: 0, display: "block", minHeight: "360px" }}
+        style={{ border: 0, display: "block", minHeight: "360px", backgroundColor: "#222" }}
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen
+        onError={() => {
+          console.error("[MediaVideo] iframe error for video:", video.key);
+          setHasError(true);
+        }}
       ></iframe>
+      {hasError && (
+        <Box sx={{ 
+          p: 2, 
+          backgroundColor: "#1a1a1a", 
+          color: "text.secondary", 
+          textAlign: "center",
+          border: "1px solid #333"
+        }}>
+          <Typography variant="body2">
+            Video not available. {" "}
+            <a href={youtubeWatchUrl} target="_blank" rel="noopener noreferrer" style={{ color: "#e50914" }}>
+              Watch on YouTube
+            </a>
+          </Typography>
+        </Box>
+      )}
     </Box>
   );
 };
