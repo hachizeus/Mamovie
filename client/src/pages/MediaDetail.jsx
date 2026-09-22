@@ -178,12 +178,14 @@ const MediaDetail = () => {
                   <Stack direction="row" spacing={1}>
                     <LoadingButton
                       variant="text"
-                      sx={{ width: "max-content" }}
+                      sx={{ width: "max-content", opacity: 0.5 }}
                       size="large"
+                      disabled
                       startIcon={isFavorite ? <FavoriteIcon /> : <FavoriteBorderOutlinedIcon />}
                       loadingPosition="start"
                       loading={onRequest}
                       onClick={onFavoriteClick}
+                      title="Favorites feature is disabled"
                     />
                     <Button
                       variant="contained"
