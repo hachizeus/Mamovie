@@ -197,7 +197,10 @@ const getDetail = async (req, res) => {
 
     if (tokenDecoded) {
       try {
-        const user = await userModel.findById(tokenDecoded.data);
+        const user = await Promise.race([
+          userModel.findById(tokenDecoded.data),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000))
+        ]);
 
         if (user) {
           const isFavorite = await favoriteModel.findOne({ user: user.id, mediaId: id });
@@ -207,10 +210,15 @@ const getDetail = async (req, res) => {
         console.warn(`[getDetail] Failed to fetch user favorite status: ${err.message}`);
         media.isFavorite = false;
       }
+    } else {
+      media.isFavorite = false;
     }
 
     try {
-      media.reviews = await reviewModel.find({ mediaId: id }).populate("user").sort("-createdAt");
+      media.reviews = await Promise.race([
+        reviewModel.find({ mediaId: id }).populate("user").sort("-createdAt"),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000))
+      ]);
     } catch (err) {
       console.warn(`[getDetail] Failed to fetch reviews: ${err.message}`);
       media.reviews = [];
