@@ -287,12 +287,8 @@ const MediaDetail = () => {
           {/* media recommendation */}
         </Box>
       </>
-    ) : (
-      <Box sx={{ color: "primary.contrastText", ...uiConfigs.style.mainContent, padding: "4rem 0", textAlign: "center" }}>
-        <Typography variant="h6">Loading media details...</Typography>
-      </Box>
-    )
-  );
+    );
+  }
 };
 
 export default MediaDetail;
