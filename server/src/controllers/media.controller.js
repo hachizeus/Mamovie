@@ -167,8 +167,8 @@ const getDetail = async (req, res) => {
       }
 
       try {
-        const videos = await tmdbApi.mediaVideos(params);
-        media.videos = videos || [];
+        const videosResponse = await tmdbApi.mediaVideos(params);
+        media.videos = videosResponse?.results || [];
       } catch (err) {
         console.warn(`[getDetail] Failed to fetch videos: ${err.message}`);
         media.videos = [];
