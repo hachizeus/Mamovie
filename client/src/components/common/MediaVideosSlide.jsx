@@ -7,17 +7,81 @@ import NavigationSwiper from "./NavigationSwiper";
 
 const MediaVideo = ({ video }) => {
   const [hasError, setHasError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    console.log("[MediaVideo] ========== DEEP LOGGING START ==========");
+    console.log("[MediaVideo] Video prop received:", video);
+    console.log("[MediaVideo] Video type:", typeof video);
+    console.log("[MediaVideo] Video keys:", Object.keys(video || {}));
+    
+    if (video) {
+      console.log("[MediaVideo] video.key:", video.key);
+      console.log("[MediaVideo] video.name:", video.name);
+      console.log("[MediaVideo] video.site:", video.site);
+      console.log("[MediaVideo] video.type:", video.type);
+      console.log("[MediaVideo] video.id:", video.id);
+    }
+  }, [video]);
 
   if (!video?.key) {
+    const errorMsg = `No video key found. Video: ${JSON.stringify(video)}`;
+    console.error("[MediaVideo] ERROR - " + errorMsg);
     return (
-      <Box sx={{ height: "max-content", color: "text.secondary", textAlign: "center", p: 2 }}>
-        Invalid video data (no key)
+      <Box sx={{ height: "max-content", color: "#ff0000", textAlign: "center", p: 2, backgroundColor: "#1a1a1a", border: "2px solid #ff0000" }}>
+        <Typography variant="body2">❌ Invalid video data (no key)</Typography>
+        <Typography variant="caption" sx={{ color: "#ffaaaa" }}>Video object: {JSON.stringify(video)}</Typography>
       </Box>
     );
   }
 
   const youtubeWatchUrl = `https://www.youtube.com/watch?v=${video.key}`;
   const youtubeEmbedUrl = `https://img.youtube.com/vi/${video.key}/maxresdefault.jpg`;
+
+  console.log("[MediaVideo] YouTube URLs built:");
+  console.log("[MediaVideo]   - Watch URL:", youtubeWatchUrl);
+  console.log("[MediaVideo]   - Embed URL:", youtubeEmbedUrl);
+
+  const handleImageLoad = (e) => {
+    console.log("[MediaVideo] Image loaded successfully for video:", video.key);
+    console.log("[MediaVideo] Image element:", e.target);
+  };
+
+  const handleImageError = (e) => {
+    const errorMsg = `Failed to load thumbnail for video ${video.key}`;
+    console.error("[MediaVideo] IMAGE ERROR:", errorMsg);
+    console.error("[MediaVideo] Error event:", e);
+    console.error("[MediaVideo] Error details:", {
+      error: e.error,
+      message: e.message,
+      type: e.type
+    });
+    setErrorMessage(errorMsg);
+    setHasError(true);
+  };
+
+  const handlePlayClick = (e) => {
+    try {
+      console.log("[MediaVideo] Play button clicked for video:", video.key);
+      console.log("[MediaVideo] Opening URL:", youtubeWatchUrl);
+      const newWindow = window.open(youtubeWatchUrl, '_blank');
+      if (!newWindow) {
+        console.error("[MediaVideo] Failed to open window - popup may be blocked");
+        setErrorMessage("Popup blocked - please allow popups");
+      } else {
+        console.log("[MediaVideo] Window opened successfully");
+      }
+    } catch (err) {
+      console.error("[MediaVideo] EXCEPTION in handlePlayClick:", err);
+      console.error("[MediaVideo] Exception details:", {
+        name: err.name,
+        message: err.message,
+        stack: err.stack
+      });
+      setErrorMessage(err.message);
+      setHasError(true);
+    }
+  };
 
   return (
     <Box sx={{ 
@@ -37,7 +101,10 @@ const MediaVideo = ({ video }) => {
         backgroundImage: `url('${youtubeEmbedUrl}')`,
         backgroundSize: "cover",
         backgroundPosition: "center"
-      }}>
+      }}
+      onError={handleImageError}
+      onLoad={handleImageLoad}
+      >
         <Box sx={{
           position: "absolute",
           top: 0,
@@ -70,7 +137,8 @@ const MediaVideo = ({ video }) => {
                 backgroundColor: "#0d7a4a"
               }
             }}
-            onClick={() => window.open(youtubeWatchUrl, '_blank')}
+            onClick={handlePlayClick}
+            title={`Watch: ${video.name}`}
           >
             <PlayArrowIcon sx={{ fontSize: "40px" }} />
           </Button>
@@ -81,9 +149,20 @@ const MediaVideo = ({ video }) => {
           {video.name}
         </Typography>
         <Typography variant="caption" sx={{ color: "text.secondary" }}>
-          {video.type}
+          {video.type} • {video.site || 'Unknown source'}
         </Typography>
       </Box>
+      {hasError && (
+        <Box sx={{ 
+          p: 2, 
+          backgroundColor: "#330000", 
+          color: "#ffaaaa", 
+          textAlign: "center",
+          border: "2px solid #ff0000"
+        }}>
+          <Typography variant="body2">❌ Error: {errorMessage}</Typography>
+        </Box>
+      )}
     </Box>
   );
 };
