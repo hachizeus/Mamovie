@@ -67,8 +67,8 @@ const MediaVideo = ({ video }) => {
             border: 0,
             display: "block"
           }}
-          sandbox="allow-same-origin allow-scripts allow-presentation allow-popups"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+          sandbox="allow-same-origin allow-scripts allow-presentation allow-popups allow-popups-to-escape-sandbox"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen; modestbranding"
           allowFullScreen
           onError={() => {
             console.error("[MediaVideo] iframe error for video:", video.key);
